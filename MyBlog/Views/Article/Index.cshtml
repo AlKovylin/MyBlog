@@ -1,0 +1,48 @@
+﻿@model MyBlog.ViewModels.ArticlesAllViewModel;
+
+<div class="text-center">
+    <h1 class="display-4 fst-italic py-5">Создай свой потрясающий блог!</h1>
+</div>
+
+<div class="row mb-2">
+    @if (Model != null)
+    {
+        @foreach (var article in @Model.AllArticles)
+        {
+            <div class="col-md-6">
+                <div class="flex-md-row mb-2 position-relative">
+                    @foreach (var tag in article.Tags)
+                    {
+                        <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
+                    }
+                </div>
+
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <div class="position-relative">
+                            <strong class="d-inline-block mb-3 text-primary">@article.Author.Name</strong>
+                            <strong class="d-inline-block mb-3 text-success float-end">"@article.Author.DisplayName"</strong>
+                        </div>
+                        <h3 class="mb-0">@article.Article.Title</h3>
+                        <div class="mb-1 text-muted">@article.Article.Published.ToLongDateString()</div>
+                        <p class="card-text mb-auto">@article.Article.Content.Substring(0, 190).Insert(190, "...")</p>
+                        
+                        <form asp-controller="Article" asp-action="Read" asp-route-id="@article.Article.Id" method="post">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                Продолжить чтение
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div>
+            <label> Пока здесь нет статей.</label>            
+        </div>
+    }
+</div>
+

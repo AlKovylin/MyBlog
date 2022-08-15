@@ -1,0 +1,50 @@
+﻿@model MyBlog.ViewModels.ArticleViewModel
+
+@if (Model != null)
+{
+    <div class="text-center">
+        <h3 class="display-4 fst-italic py-5">@Model.Article.Title</h3>
+    </div>
+
+    <div class="flex-md-row mb-2 position-relative">
+        @foreach (var tag in @Model.Tags)
+        {
+            <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
+        }
+    </div>
+
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+            <div class="position-relative">
+                <strong class="d-inline-block mb-3 text-primary">@Model.Author.Name</strong>
+                <strong class="d-inline-block mb-3 text-success float-end">"@Model.Author.DisplayName"</strong>
+            </div>
+            <div class="mb-1 text-muted">@Model.Article.Published.ToLongDateString()</div>
+            <p class="card-text mb-auto">@Model.Article.Content</p>
+        </div>
+    </div>
+
+    @if (@Model.Comments.Count > 0)
+    {
+        @foreach (var comment in @Model.Comments)
+        {
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="position-relative">
+                    <p class="card-text mb-auto">@comment.Created.ToLongDateString()</p>
+                </div>
+                <div class="col p-4 d-flex flex-column position-static">
+                    
+                    <p class="card-text mb-auto">@comment.Content</p>
+                </div>
+            </div>
+        }
+    }
+
+}
+else
+{
+    <div class="text-center">
+        <h3 class="display-4 fst-italic py-5">Не удалось получить данные</h3>
+    </div>
+}
+

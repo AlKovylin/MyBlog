@@ -24,13 +24,6 @@ namespace MyBlog.Controllers
             _roleRepository = roleRepository;
         }
 
-        [HttpGet]
-        public ActionResult Login()
-        {
-            return View();
-        }
-
-
         /// <summary>
         /// Принимает данные из представления и обеспечивает вход в систему
         /// </summary>    
@@ -57,14 +50,6 @@ namespace MyBlog.Controllers
             return View();
         }
 
-
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-
         /// <summary>
         /// Принимает данные из представления и обеспечивает регистрацию в системе
         /// </summary>
@@ -76,14 +61,14 @@ namespace MyBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                Domain.Core.User user = null;
+                User user = null;
 
                 user = _userRepository.GetAll().FirstOrDefault(u => u.Email == model.Email);
 
                 if (user == null)
                 {
                     // добавляем пользователя в бд
-                    var newUser = new Domain.Core.User();
+                    var newUser = new User();
 
                     newUser.Email = model.Email;
                     newUser.Password = model.Password;
@@ -124,7 +109,7 @@ namespace MyBlog.Controllers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task Authenticate(Domain.Core.User user)//(User ClaimsPrincipal ControllerBase User{get;})
+        private async Task Authenticate(User user)//(User ClaimsPrincipal ControllerBase User{get;})
         {
             var userRoles = _userRepository.GetUserRoles(user);
 

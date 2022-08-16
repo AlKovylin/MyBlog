@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MyBlog.Domain.Interfaces\MyBlog.Domain.Interfaces.csproj" />
     <ProjectReference Include="..\MyBlog.Infrastructure.Data\MyBlog.Infrastructure.Data.csproj" />
-    <ProjectReference Include="..\MyBlog.Services.Interfaces\MyBlog.Services.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

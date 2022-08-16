@@ -33,35 +33,7 @@ namespace MyBlog.Controllers
 
         /// <summary>
         /// Принимает данные из представления и обеспечивает вход в систему
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Login(LoginModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        // поиск пользователя в бд
-        //        Domain.Core.User user = null;
-
-        //        user = _userRepository.GetAll().FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
-
-        //        if (user != null)
-        //        {
-        //            await Authenticate(user);
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError("", "Некорректные логин и(или) пароль");
-        //        }
-        //    }
-
-        //    return View(model);
-        //}        
-
-
+        /// </summary>    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(string email, string password)
@@ -144,7 +116,7 @@ namespace MyBlog.Controllers
         {
             await HttpContext.SignOutAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Article");
         }
 
         /// <summary>

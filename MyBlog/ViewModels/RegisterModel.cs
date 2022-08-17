@@ -5,6 +5,7 @@ namespace MyBlog.Models
     public class RegisterModel
     {
         [Required(ErrorMessage = "Не указан Email")]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Не указан пароль")]

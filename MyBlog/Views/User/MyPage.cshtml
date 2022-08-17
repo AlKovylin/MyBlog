@@ -1,0 +1,42 @@
+﻿@using MyBlog.ViewModels;
+
+@model ArticlesAllViewModel<ArticlesUserViewModel>;
+
+
+@if (Model != null)
+{
+    <div class="text-center">
+        <h3 class="display-4 fst-italic py-5">Личный кабинет</h3>
+    </div>
+
+    <div class="col-md-3 text-end">
+        <button type="button" class="btn btn-outline-primary me-2">Личные данные</button>
+    </div>
+
+    <div class="flex-md-row mb-2 position-relative">
+        @foreach (var article in @Model.AllArticles)
+        {
+            @foreach (var tag in article.Tags)
+            {
+                <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
+            }
+
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <div class="position-relative">
+                        <strong class="d-inline-block mb-3 text-primary">@article.Article.Title</strong>
+                        <strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Published.ToLongDateString()"</strong>
+                        <strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Modified.ToLongDateString()"</strong>
+                    </div>
+                    <p class="card-text mb-auto">@article.Article.Content.Substring(0, 190).Insert(190, "...")</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h3 class="display-4 fst-italic py-5">Не удалось получить данные</h3>
+    </div>
+}

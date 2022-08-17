@@ -43,7 +43,9 @@
                         @if (!(bool)ViewData["Authorise"])
                         {
                             <button type="button" class="btn btn-outline-primary me-2" data-toggle="modal" data-target="#inModal">Войти</button>
-                            <button type="button" class="btn btn-primary">Регистрация</button>
+                            <!--<form asp-controller="Account" asp-action="Register" method="get">-->
+                            <button href="" type="submit" class="btn btn-primary">Регистрация</button>
+                            <!--</form>-->
                         }
                         else
                         {
@@ -81,15 +83,11 @@
                     </div>
 
 
+
+
                 </div>
             </nav>
         </header>
-
-
-
-
-
-
 
 
 

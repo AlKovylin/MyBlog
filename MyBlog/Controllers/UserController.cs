@@ -31,14 +31,17 @@ namespace MyBlog.Controllers
         {
             var claimsPrincipal = User;
 
-            var user = _userRepository.GetAll().Where(u => u.Email == claimsPrincipal.Identity.Name) as User;
+            var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == claimsPrincipal.Identity.Name);
 
-            var Articles = _articleRepository.GetAll().Where(a => a.User == user) as List<Article>;
+            var articles = _articleRepository.GetAll().Select(a => a).Where(a => a.User == user).ToList();
+
+            var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
 
             var model = new UserViewModel()
             {
                 User = _mapper.Map<UserModel>(user),
-                Articles = _mapper.Map<List<ArticleModel>>(Articles)
+                Articles = _mapper.Map<List<ArticleModel>>(articles),
+
             };
 
             return View("User", model);

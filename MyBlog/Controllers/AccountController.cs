@@ -50,6 +50,10 @@ namespace MyBlog.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Register() => View("Register");
+
+
         /// <summary>
         /// Принимает данные из представления и обеспечивает регистрацию в системе
         /// </summary>
@@ -57,41 +61,42 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(string email, string password)
         {
             if (ModelState.IsValid)
             {
                 User user = null;
 
-                user = _userRepository.GetAll().FirstOrDefault(u => u.Email == model.Email);
+                user = _userRepository.GetAll().FirstOrDefault(u => u.Email == email);
 
                 if (user == null)
                 {
                     // добавляем пользователя в бд
                     var newUser = new User();
 
-                    newUser.Email = model.Email;
-                    newUser.Password = model.Password;
+                    newUser.Email = email;
+                    newUser.Password = password;
                     newUser.Role.Add(_roleRepository.GetAll().FirstOrDefault(r => r.Name == DefaultRole.Role));
 
                     _userRepository.Create(newUser);
 
                     //проверяем успешность добавления в базу
-                    user = _userRepository.GetAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    user = _userRepository.GetAll().Where(u => u.Email == email && u.Password == password).FirstOrDefault();
 
                     if (user != null)
                     {
                         await Authenticate(user);
 
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Article");
                     }
                 }
                 else
                 {
+                    //Здесь добавить возврат ошибки
                     Console.WriteLine("Пользователь с таким логином уже существует");
                 }
             }
-            return View(model);
+            return RedirectToAction("Index", "Article");
         }
 
         [Route("Logout")]

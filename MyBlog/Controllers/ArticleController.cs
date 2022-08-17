@@ -40,7 +40,7 @@ namespace MyBlog.Controllers
         {
             ViewData["Authorise"] = HttpContext.User.Identity.IsAuthenticated;
 
-            var allArticles = new ArticlesAllViewModel();
+            var allArticles = new ArticlesAllViewModel<ArticleViewModel>();
 
             var articles = _articleRepository.GetAll();
 

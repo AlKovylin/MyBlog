@@ -1,0 +1,56 @@
+﻿
+
+<div class="modal fade bg-secondary py-5" id="inModal" role="dialog" aria-labelledby="outModaLable" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header p-5 pb-4 border-bottom-0">
+                <h2 class="fw-bold mb-0">Регистрация нового пользователя</h2>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-5 pt-0">
+                <form asp-controller="Account" asp-action="Register" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control rounded-3" name="email" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Email address</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control rounded-3" name="password" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Password</label>
+                    </div>
+                    <button class="w-50 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Войти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--<div class="ui three stackable cards">
+    @foreach (var s in Model.Suppliers)
+    {
+    <div class="ui card link">
+        <div class="content">
+            <div id="go" style="display:none">@s.SupplierID</div>
+            <h2 class="header">@s.ShortName</h2>
+            <div class="meta" style="font-size: 0.92857143rem; ">
+                <span style="color:black">@s.Name</span><br />
+                <span>ИНН: @s.Inn</span>
+            </div>
+            <div style="font-weight:700; font-size: 0.92857143rem; margin-top:1em;">
+                @foreach (var ph in s.Phones)
+                {
+                <i class="phone icon"></i> @ph.PhoneNumber<br />
+                }
+                @foreach (var em in s.Emails)
+                {
+                <a href="mailto:@em.Contact_Email" target="_top"><i class="mail icon"></i>@em.Contact_Email</a><br />
+
+                }
+                <a href="http://@s.Site" target="_blank"><i class="world icon"></i>@s.Site</a> <br />
+            </div>
+        </div>
+    </div>
+    }
+</div>-->

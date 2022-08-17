@@ -2,8 +2,8 @@
 
 namespace MyBlog.ViewModels
 {
-    public class ArticlesAllViewModel
+    public class ArticlesAllViewModel<T>
     {
-        public List<ArticleViewModel> AllArticles = new List<ArticleViewModel>();
+        public List<T> AllArticles = new List<T>();
     }
 }

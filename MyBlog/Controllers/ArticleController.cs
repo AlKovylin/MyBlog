@@ -37,9 +37,7 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpGet]
         public IActionResult Index()
-        {
-            ViewData["Authorise"] = HttpContext.User.Identity.IsAuthenticated;
-
+        {    
             var allArticles = new ArticlesAllViewModel<ArticleViewModel>();
 
             var articles = _articleRepository.GetAll();

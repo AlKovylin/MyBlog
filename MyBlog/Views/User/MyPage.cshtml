@@ -1,6 +1,6 @@
 ﻿@using MyBlog.ViewModels;
 
-@model ArticlesAllViewModel<ArticlesUserViewModel>;
+@model ArticlesAllViewModel<ArticleUserViewModel>;
 
 
 @if (Model != null)
@@ -9,8 +9,9 @@
         <h3 class="display-4 fst-italic py-5">Личный кабинет</h3>
     </div>
 
-    <div class="col-md-3 text-end">
+    <div class="col-md-3 ">
         <button type="button" class="btn btn-outline-primary me-2">Личные данные</button>
+        <button type="button" class="btn btn-outline-primary me-2">Добавить статью</button>
     </div>
 
     <div class="flex-md-row mb-2 position-relative">
@@ -30,6 +31,9 @@
                     </div>
                     <p class="card-text mb-auto">@article.Article.Content.Substring(0, 190).Insert(190, "...")</p>
                 </div>
+            </div>
+            <div>
+                <a href="#">Редактировать</a>
             </div>
         }
     </div>

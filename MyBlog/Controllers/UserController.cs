@@ -14,13 +14,18 @@ namespace MyBlog.Controllers
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
-        private readonly IRepository<Article> _articleRepository;
+        private readonly IArticleRepository _articleRepository;
+        private readonly IRepository<Tag> _tagRepository;
         private readonly IMapper _mapper;
 
-        public UserController(IUserRepository userRepository, IRepository<Article> articleRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository, 
+                              IArticleRepository articleRepository, 
+                              IMapper mapper,
+                              IRepository<Tag> tagRepository)
         {
             _userRepository = userRepository;
             _articleRepository = articleRepository;
+            _tagRepository = tagRepository;
             _mapper = mapper;
         }
 
@@ -35,16 +40,21 @@ namespace MyBlog.Controllers
 
             var articles = _articleRepository.GetAll().Select(a => a).Where(a => a.User == user).ToList();
 
-            var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
+            var model = new ArticlesAllViewModel<ArticleUserViewModel>();
 
-            var model = new UserViewModel()
+            if (articles != null)
             {
-                User = _mapper.Map<UserModel>(user),
-                Articles = _mapper.Map<List<ArticleModel>>(articles),
+                foreach (var article in articles)
+                {
+                    model.AllArticles.Add(new ArticleUserViewModel()
+                    {
+                        Article = _mapper.Map<ArticleModel>(article),
+                        Tags = _mapper.Map<List<TagModel>>(_articleRepository.GetArticleTags(article))
+                    });
+                }
+            }
 
-            };
-
-            return View("User", model);
+            return View("MyPage", model);
         }
             
         [Route("Edit")]

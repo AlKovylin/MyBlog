@@ -6,10 +6,8 @@ namespace MyBlog.ViewModels
 {
     public class ArticleEditViewModel
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public DateTime Modified { get; set; } = DateTime.Now;
-        public List<TagModel> Tags = new List<TagModel>();
+        public ArticleModel Article { get; set; }
+        public List<TagModel> TagsArticle = new List<TagModel>();
+        public List<TagModel> TagsAll = new List<TagModel>();
     }
 }

@@ -1,0 +1,30 @@
+﻿@model MyBlog.ViewModels.ArticleEditViewModel;
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="row">
+
+    <script src="~/js/ckeditor/ckeditor.js"></script>
+    <div>
+        @using (Html.BeginForm("Save", "Article", FormMethod.Post))
+        {
+            <div>
+                <b>Название статьи:</b><br>
+                <input type="text" size="40" value="@Model.Article.Title"/>
+            </div>
+            <div>
+                <textarea id="content" name="content">@Model.Article.Content</textarea>
+            </div>
+            <div>
+                <input type="submit" value="Сохранить" />
+            </div>
+        }
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var editor = CKEDITOR.replace('content');
+    });
+</script>

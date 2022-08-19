@@ -129,19 +129,24 @@ namespace MyBlog.Controllers
         /// </summary>
         /// <param name="articleId"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Authorize(Roles = "User, Moderator")]
-        public IActionResult Edit(string articleId)
+        public IActionResult Edit(int Id)
         {
-            var article = _articleRepository.Get(int.Parse(articleId));
+            var article = _articleRepository.Get(Id);
 
-            var getArticle = _mapper.Map<ArticleEditViewModel>(article);
+            var tagsArticle = _articleRepository.GetArticleTags(article);
 
-            var tags = _articleRepository.GetArticleTags(article);
+            var tagsAll = _tagRepository.GetAll();
 
-            getArticle.Tags = _mapper.Map<List<TagModel>>(tags);
+            var editArticle = new ArticleEditViewModel()
+            {
+                Article = _mapper.Map<ArticleModel>(article),
+                TagsArticle = _mapper.Map<List<TagModel>>(tagsArticle),
+                TagsAll = _mapper.Map<List<TagModel>>(tagsAll)
+            };
 
-            return View("Edit", getArticle);
+            return View("Editor", editArticle);
         }
 
         /// <summary>
@@ -151,21 +156,21 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "User, Moderator")]
-        public IActionResult Edit(ArticleEditViewModel model)
+        public IActionResult Save(ArticleEditViewModel model)
         {
-            var article = _articleRepository.Get(int.Parse(model.Id));
+            //var article = _articleRepository.Get(int.Parse(model.Id));
 
-            article.Title = model.Title;
-            article.Content = model.Content;
+            //article.Title = model.Title;
+            //article.Content = model.Content;
 
-            article.Tags.Clear();
+            //article.Tags.Clear();
 
-            foreach(var tag in model.Tags)
-            {
-                var newTag = _tagRepository.GetAll().Where(t => t.Name == tag.Name) as Tag;
+            //foreach(var tag in model.Tags)
+            //{
+            //    var newTag = _tagRepository.GetAll().Where(t => t.Name == tag.Name) as Tag;
 
-                article.Tags.Add(newTag);
-            }
+            //    article.Tags.Add(newTag);
+            //}
 
             return View("Edit");
         }

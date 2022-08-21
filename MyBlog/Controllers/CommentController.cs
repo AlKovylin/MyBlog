@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MyBlog.Controllers
 {
-    
+
     public class CommentController : Controller
     {
         private readonly IUserRepository _userRepository;
@@ -33,20 +33,22 @@ namespace MyBlog.Controllers
         public IActionResult Create(string comment, int articleId)
         {
 
-                var article = _articleRepository.Get(articleId);
+            var article = _articleRepository.Get(articleId);
 
-                var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
+            var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
 
-                var newComment = new Comment()
-                {
-                    Content = comment,
-                    User = user,
-                    Article = article
-                };
+            var newComment = new Comment()
+            {
+                Content = comment,
+                User = user,
+                Article = article
+            };
 
-                _commentRepository.Create(newComment);
+            _commentRepository.Create(newComment);
 
-                return RedirectToAction("Read", "Article", new { id = articleId });
+            ViewData["ArticleId"] = articleId;
+
+            return RedirectToAction("Read", "Article");
 
         }
 

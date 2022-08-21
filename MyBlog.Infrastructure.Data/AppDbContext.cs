@@ -13,7 +13,7 @@ namespace MyBlog.Infrastructure.Data
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             if (Database.EnsureCreated())
             {
                 Roles.AddRange(

@@ -20,26 +20,39 @@
                 <strong class="d-inline-block mb-3 text-success float-end">"@Model.Author.DisplayName"</strong>
             </div>
             <div class="mb-1 text-muted">@Model.Article.Published.ToLongDateString()</div>
-            <p class="card-text mb-auto">@Model.Article.Content</p>
+            @Html.Raw(@Model.Article.Content)
         </div>
     </div>
-
+    <div>
+        <h5>Комментарии</h5>
+    </div>
+    <br />
     @if (@Model.Comments.Count > 0)
     {
         @foreach (var comment in @Model.Comments)
         {
             <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="position-relative">
-                    <p class="card-text mb-auto">@comment.Created.ToLongDateString()</p>
-                </div>
                 <div class="col p-4 d-flex flex-column position-static">
-                    
-                    <p class="card-text mb-auto">@comment.Content</p>
+                    <div class="position-relative">
+                        <p class="d-inline-block mb-3 text-primary">@comment.Created.ToLongDateString()</p>
+                    </div>
+                    <div>
+                        <p class="card-text mb-auto">@comment.Content</p>
+                    </div>
                 </div>
             </div>
         }
     }
-
+    else
+    {
+        <div>
+            <p>Пока здесь нет комментариев. Стань первым!</p>
+        </div>
+    }
+    <div>
+        <!--<a href="" data-toggle="modal" data-target="#Comment" class="stretched-link">Добавить комментарий...</a>-->
+        <button type="button" class="btn btn-outline-primary me-2" data-toggle="modal" data-target="#Comment">Добавить комментарий...</button>
+    </div>
 }
 else
 {
@@ -48,3 +61,51 @@ else
     </div>
 }
 
+
+
+
+<!-- Modal -->
+<div class="modal fade bg-secondary py-5" id="Comment" role="dialog" aria-labelledby="inModaLable" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header p-5 pb-4 border-bottom-0">
+                <h2 class="fw-bold mb-0">Комментарий</h2>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-5 pt-0">
+                <form asp-controller="Comment" asp-action="Create" method="post">
+                    <div class="form-floating mb-3">
+                        <textarea rows="8" class="form-control rounded-3" name="comment" id="floatingInput"></textarea>
+                        <label for="floatingInput">Комментарий</label>
+                    </div>
+                    <div>
+                        <input asp-for="Article.Id" name="articleId" type="hidden" />
+                    </div>
+                    <button class="w-50 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updatePostID(val, comment) {
+
+        var args = {};
+        args.PostID = val;
+        args.Comment = comment;
+
+        $.ajax({
+            type: "POST",
+            url: controllerActionMethodUrlHere,
+            contentType: "application/json; charset=utf-8",
+            data: args,
+            dataType: "json",
+            success: function(msg) {
+                // Something afterwards here
+
+            }
+        });
+    }
+</script>

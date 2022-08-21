@@ -17,44 +17,37 @@ namespace MyBlog.Controllers
         private IRepository<Comment> _commentRepository;
         private IRepository<Article> _articleRepository;
 
-        public CommentController(IUserRepository userRepository, IRepository<Comment> commentRepository, IRepository<Article> articleRepository)
+        public CommentController(IUserRepository userRepository, IRepository<Comment> commentRepository, IArticleRepository articleRepository)
         {
             _userRepository = userRepository;
             _commentRepository = commentRepository;
             _articleRepository = articleRepository;
         }
 
-        [Authorize(Roles ="User")]
-        [HttpGet]
-        public IActionResult Create() => View("Create");
+        //[Authorize(Roles ="User")]
+        //[HttpGet]
+        //public IActionResult Create() => View("Create");
 
         [Authorize(Roles = "User")]
         [HttpPost]
-        public IActionResult Create(CommentViewModel model, string articleId)
+        public IActionResult Create(string comment, int articleId)
         {
-            if ((ModelState.IsValid))
-            {
-                var article = _articleRepository.Get(int.Parse(articleId));
 
-                var user = _userRepository.GetAll().Where(u => u.Email == User.Identity.Name) as User;
+                var article = _articleRepository.Get(articleId);
 
-                var comment = new Comment()
+                var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
+
+                var newComment = new Comment()
                 {
-                    Content = model.Content,
+                    Content = comment,
                     User = user,
                     Article = article
                 };
 
-                _commentRepository.Create(comment);
+                _commentRepository.Create(newComment);
 
-                return View();
-            }
-            else
-            {
-                ModelState.AddModelError("", "Некорректные данные");
-                return View("Create", "Некорректные данные");
-            }
-            
+                return RedirectToAction("Read", "Article", new { id = articleId });
+
         }
 
         [Authorize(Roles = "User, Moderator")]

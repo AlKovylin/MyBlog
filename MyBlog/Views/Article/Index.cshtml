@@ -27,14 +27,13 @@
                         </div>
                         <h3 class="mb-0">@article.Article.Title</h3>
                         <div class="mb-1 text-muted">@article.Article.Published.ToLongDateString()</div>
-                        <p class="card-text mb-auto">@article.Article.Content.Substring(0, 190).Insert(190, "...")</p>
-                        
+                        <p class="card-text mb-auto">@article.Article.Content.Substring(0, 190).Insert(190, "...")</p>                       
+                        <br>
                         <form asp-controller="Article" asp-action="Read" asp-route-id="@article.Article.Id" method="post">
                             <button type="submit" class="btn btn-sm btn-primary">
-                                Продолжить чтение
+                                Продолжить чтение...
                             </button>
-                        </form>
-
+                        </form>                                               
                     </div>
                 </div>
             </div>

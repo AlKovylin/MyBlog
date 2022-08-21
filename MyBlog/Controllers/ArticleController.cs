@@ -5,6 +5,7 @@ using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Business.Models;
 using MyBlog.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -70,15 +71,11 @@ namespace MyBlog.Controllers
             }
         }
 
-        //[Route("Read")]
-        //[HttpPost]
-        //public IActionResult Read(ArticleViewModel model)
-        //{
-        //    return View("ReadArticle", model);
-
-        //    //return RedirectToPage("ReadArticle", model);
-        //}
-
+        /// <summary>
+        /// Чтение конкретной статьи
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Route("Read")]
         [HttpPost]
         public IActionResult Read(int id)
@@ -156,32 +153,92 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "User, Moderator")]
-        public IActionResult Save(ArticleEditViewModel model)
+        public IActionResult Save(ArticleEditViewModel model, string content)
         {
-            //var article = _articleRepository.Get(int.Parse(model.Id));
+            var article = _articleRepository.Get(model.Article.Id);
 
-            //article.Title = model.Title;
-            //article.Content = model.Content;
+            //article = _mapper.Map<Article>(model.Article);
 
-            //article.Tags.Clear();
+            article.Title = model.Article.Title;
 
-            //foreach(var tag in model.Tags)
+            article.Content = content;
+
+            var allTags = _tagRepository.GetAll();
+
+            article.Tags.Clear();
+
+            var inTags = model.Tags.Split(',').ToList();
+
+            foreach (var tag in inTags)
+            {
+                article.Tags.Add(_tagRepository.GetAll().FirstOrDefault(t => t.Name == tag));
+            }
+
+            article.Modified = DateTime.Now;
+
+            _articleRepository.Update(article);
+
+            //если статья уже есть - обновим её
+            //if(article != null)
             //{
-            //    var newTag = _tagRepository.GetAll().Where(t => t.Name == tag.Name) as Tag;
+            //    article.Title = model.Article.Title;
 
-            //    article.Tags.Add(newTag);
+            //    article.Content = model.Article.Content;
+
+            //    article.Tags.Clear();
+
+            //    foreach (var tag in model.TagsArticle)
+            //    {
+            //        var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag.Name);
+
+            //        article.Tags.Add(_tag);
+            //    }
+
+            //    article.Modified = DateTime.Now;
+
+            //    _articleRepository.Update(article);
+            //}
+            //else//если нет создадим
+            //{
+            //    var newArticle = _mapper.Map<Article>(model.Article);
+
+            //    newArticle.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
+
+            //    foreach(var tag in model.TagsArticle)
+            //    {
+            //        var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag.Name);
+
+            //        newArticle.Tags.Add(_tag);
+            //    }
+
+            //    newArticle.Published = DateTime.Now;
+
+            //    _articleRepository.Create(newArticle);
             //}
 
-            return View("Edit");
+            //return RedirectToAction("Edit", new { id = article.Id });
+            //return View("Editor", article.Id);
+            return RedirectToAction("Index", "Article");
         }
+
 
         [HttpGet]
         [Authorize(Roles = "User")]
         public IActionResult Create()
         {
-            var tags = _tagRepository.GetAll();
+            var article = new Article();
 
-            return View("Create", tags);
+            article.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
+
+            _articleRepository.Create(article);
+
+            var model = new ArticleEditViewModel()
+            {
+                Article = _mapper.Map<ArticleModel>(article),
+                TagsAll = _mapper.Map<List<TagModel>>(_tagRepository.GetAll())
+            };
+
+            return View("Editor", article);
         }
 
         [HttpPost]

@@ -5,26 +5,72 @@
 }
 
 <div class="row">
-
     <script src="~/js/ckeditor/ckeditor.js"></script>
-    <div>
-        @using (Html.BeginForm("Save", "Article", FormMethod.Post))
+
+    <div class="">
+        @foreach (var tag in Model.TagsAll)
         {
+            if (Model.TagsArticle.Any(t => t.Id == tag.Id))
+            {
+                <input type="checkbox" class="btn-check" id="@tag.Name" name="check" autocomplete="off" checked onchange="clickTag(event)">
+                ViewData[tag.Name] = "true";
+            }
+            else
+            {
+                <input type="checkbox" class="btn-check" id="@tag.Name" name="check" autocomplete="off" onchange="clickTag(event)">
+                ViewData[tag.Name] = "false";
+            }
+            <label class="btn btn-outline-primary" for="@tag.Name">
+                @tag.Name
+            </label>
+            Console.WriteLine($"ViewData[{tag.Name}] = {ViewData[tag.Name]}");
+        }
+    </div>
+    <div>
+        <form asp-controller="Article" asp-action="Save" method="post">        
+            <div>
+                <input asp-for="Article.Id" type="hidden" />
+                <input asp-for="Article.Published" type="hidden" />
+                @foreach (var tag in Model.TagsAll)
+                {
+                    if ((string)ViewData[tag.Name] == "true")
+                    {
+                        if (Model.Tags == null)
+                        {
+                            Model.Tags = tag.Name;
+                        }
+                        else
+                        {
+                            Model.Tags += "," + tag.Name;
+                        }
+                    }
+                }
+                <input asp-for="Tags" type="hidden" />
+            </div>
             <div>
                 <b>Название статьи:</b><br>
-                <input type="text" size="40" value="@Model.Article.Title"/>
+                <input asp-for="Article.Title" type="text" size="40" value="@Model.Article.Title" />
             </div>
             <div>
-                <textarea id="content" name="content">@Model.Article.Content</textarea>
+                <textarea asp-for="Article.Content" id="content" name="content">@Model.Article.Content</textarea>
             </div>
             <div>
-                <input type="submit" value="Сохранить" />
+                <input type="submit" value="Сохранить" onclick="updateTags" />
             </div>
-        }
+        </form>
     </div>
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function (event) {
+    document.addEventListener("DOMContentLoaded", function(event) {
+        //CKEDITOR.config.height(25);
         var editor = CKEDITOR.replace('content');
     });
+
+    function clickTag(event) {
+        event.preventDefault();
+        idFlight = event.target.id;
+        DataView[idFlight] = event.target.checked;
+        console.log(idFlight);
+        console.log(DataView[idFlight]);
+    }
 </script>

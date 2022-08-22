@@ -78,11 +78,8 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [Route("Read")]
         [HttpPost]
-        public IActionResult Read(int? id)
+        public IActionResult Read(int id)
         {
-            if (id == null)
-                id = (int)ViewData["ArticleId"];
-
             var article = _articleRepository.GetAll().FirstOrDefault(a => a.Id == id);
 
             var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);

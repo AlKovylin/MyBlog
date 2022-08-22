@@ -1,28 +1,35 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
-using MyBlog.Infrastructure.Data.Repository;
+using MyBlog.Domain.Interfaces;
+using MyBlog.Infrastructure.Business.Models;
 using MyBlog.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MyBlog.Controllers
 {
-    [Authorize(Roles = "Moderator")]
+    //[Authorize(Roles = "Moderator")]
     public class TagController : Controller
     {
-        private readonly TagRepository _tagRepository;
-        private readonly Mapper _mapper;
+        private readonly IRepository<Tag> _tagRepository;
+        private readonly IMapper _mapper;
 
-        public TagController(TagRepository tagRepository, Mapper mapper)
+        public TagController(IRepository<Tag> tagRepository, IMapper mapper)
         {
             _tagRepository = tagRepository;
             _mapper = mapper;
-        }
+        }      
 
         [HttpGet]
-        public IActionResult Create() => View("Create");
+        public IActionResult Index()
+        {
+            var tags = _tagRepository.GetAll();
+
+            var model = new TagsViewModel() { Tags = _mapper.Map<List<TagModel>>(tags)};
+
+            return View("Index", model);
+        }
 
         [HttpPost]
         public IActionResult Create(string name)
@@ -31,23 +38,13 @@ namespace MyBlog.Controllers
 
             _tagRepository.Create(tag);
 
-            return View("Create");
+            return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            var tags = _tagRepository.GetAll();
-
-            var model = _mapper.Map<List<TagViewModel>>(tags);
-
-            return View("", model);
-        }
-
-        [HttpDelete]
+        [HttpPost]
         public IActionResult Delete(string id)
         {
-            var tag = _tagRepository.GetAll().Where(t => t.Id == int.Parse(id)) as Tag;
+            var tag = _tagRepository.GetAll().FirstOrDefault(t => t.Id == int.Parse(id));
 
             _tagRepository.Delete(tag);
 

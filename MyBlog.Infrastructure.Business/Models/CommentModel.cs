@@ -6,6 +6,6 @@ namespace MyBlog.Infrastructure.Business.Models
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
     }
 }

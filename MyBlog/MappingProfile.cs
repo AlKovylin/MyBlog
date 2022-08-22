@@ -15,7 +15,7 @@ namespace MyBlog
             CreateMap<TagModel, Tag>();
             CreateMap<ArticleEditViewModel, Article>();
             CreateMap<Article, ArticleEditViewModel>();
-            CreateMap<TagViewModel, Tag>();
+            CreateMap<TagsViewModel, Tag>();
 
             CreateMap<User, UserModel>();
             CreateMap<Article, ArticleModel>();

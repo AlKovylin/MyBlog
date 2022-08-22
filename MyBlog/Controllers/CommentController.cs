@@ -46,10 +46,7 @@ namespace MyBlog.Controllers
 
             _commentRepository.Create(newComment);
 
-            ViewData["ArticleId"] = articleId;
-
-            return RedirectToAction("Read", "Article");
-
+            return RedirectToAction("Read", "Article", new { id = articleId});
         }
 
         [Authorize(Roles = "User, Moderator")]

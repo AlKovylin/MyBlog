@@ -1,0 +1,40 @@
+﻿@model MyBlog.ViewModels.TagsViewModel;
+
+@{
+    ViewData["Title"] = "Тэги";
+}
+
+<div class="text-center">
+    <h1 class="display-4 fst-italic py-2">Управление тегами</h1>
+</div>
+
+<div class="container">
+    <h4 class="d-inline-block mb-3">Добавить новый тег</h4>
+    <form class="form-inline" asp-controller="Tag" asp-action="Create" method="post">
+        <div class="form-group mb-4">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control-lg rounded-sm" name="name" id="floatingInput" placeholder="#name">
+
+                <button type="submit" class="btn btn-outline-primary btn-sm">Добавить</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    @foreach (var tag in Model.Tags)
+    {
+        <form asp-controller="Tag" asp-action="Delete" asp-route-id="@tag.Id" method="post">
+
+            <div class="row">
+                <div class="col-sm-1">
+                    <strong class="d-inline-block mb-3 text-primary">@tag.Name</strong>
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Удалить</button>
+                </div>
+            </div>
+
+        </form>
+    }
+</div>

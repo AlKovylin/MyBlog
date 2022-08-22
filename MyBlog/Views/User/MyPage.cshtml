@@ -2,27 +2,32 @@
 
 @model ArticlesAllViewModel<ArticleUserViewModel>;
 
-
 @if (Model != null)
 {
     <div class="text-center">
-        <h3 class="display-4 fst-italic py-5">Личный кабинет</h3>
+        <h3 class="display-4 fst-italic py-3">Личный кабинет</h3>
     </div>
 
-    <div class="col-md-3 ">
+    <div class="col mb-3">
         <button type="button" class="btn btn-outline-primary me-2">Личные данные</button>
         <button type="button" class="btn btn-outline-primary me-2">Добавить статью</button>
     </div>
-
-    <div class="flex-md-row mb-2 position-relative">
+    <br />
+    <div class="">
+        <h1 class="fst-italiс">Мои статьи</h1>
+    </div>
+    <br />
+    <div class="flex-md-row mb-2 position-relative col-md-10">
         @foreach (var article in @Model.AllArticles)
         {
-            @foreach (var tag in article.Tags)
-            {
-                <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
-            }
-
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="">
+                @foreach (var tag in article.Tags)
+                {
+                    <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
+                }
+            </div>
+  
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-3 shadow-sm h-md-250 position-relative">
                 <div class="col p-4 d-flex flex-column position-static">
                     <div class="position-relative">
                         <strong class="d-inline-block mb-3 text-primary">@article.Article.Title</strong>
@@ -39,6 +44,7 @@
                     </button>
                 </form>
             </div>
+            <br />
         }
     </div>
 }

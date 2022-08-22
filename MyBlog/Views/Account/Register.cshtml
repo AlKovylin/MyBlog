@@ -14,7 +14,7 @@
                 <div class="col-12">
                     <label for="email" class="form-label">Эл. адрес<span class="text-muted">(для входа в систему)</span></label>
                     <div class="input-group has-validation">
-                        <span class="input-group-text">@</span>
+                        <!--<span class="input-group-text"></span>-->
                         <input asp-for="Email" type="text" class="form-control" id="email" placeholder="Имя пользователя" required="">
                         <span asp-validation-for="Email" class="text-danger"></span>
                         <div class="invalid-feedback">
@@ -48,21 +48,3 @@
         </form>
     </div>
 </div>
-
-public int Id { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Name { get; set; }
-        public string DisplayName { get; set; }
-        public string AboutMy { get; set; }
-        public string Photo { get; set; }
-
-
-        /// <summary>
-    /// Навигационное свойство ролей
-    ///
-</summary>
-        public List<Role>
-    Role { get; set; } = new List<Role>
-        ();
-        /// <summary>

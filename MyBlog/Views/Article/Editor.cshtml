@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Edit";
+    int[] temp = new int[Model.TagsAll.Count()];
+    
 }
 
 <div class="row">
@@ -46,15 +48,26 @@
                     }
                 }
                 <input asp-for="Tags" type="hidden" />
+                @foreach(var t in Model.TagsAll)
+                {
+                    <input asp-for="@t.Id" type="hidden"/>
+                    <input asp-for="@t.Name" type="hidden"/>
+                }
+                @foreach(var t in Model.TagsList)
+                {
+                    <input asp-for="@t" name="TagsList" type="hidden"/>
+                }
             </div>
             <div>
                 <b>Название статьи:</b><br>
                 <input asp-for="Article.Title" type="text" size="40" value="@Model.Article.Title" />
             </div>
+            <br/>
             <div>
                 <textarea asp-for="Article.Content" id="content" name="content">@Model.Article.Content</textarea>
             </div>
             <div>
+                
                 <input type="submit" value="Сохранить" onclick="updateTags" />
             </div>
         </form>
@@ -73,4 +86,5 @@
         console.log(idFlight);
         console.log(DataView[idFlight]);
     }
+
 </script>

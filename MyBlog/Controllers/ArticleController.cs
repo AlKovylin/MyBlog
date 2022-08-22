@@ -140,7 +140,8 @@ namespace MyBlog.Controllers
             {
                 Article = _mapper.Map<ArticleModel>(article),
                 TagsArticle = _mapper.Map<List<TagModel>>(tagsArticle),
-                TagsAll = _mapper.Map<List<TagModel>>(tagsAll)
+                TagsAll = _mapper.Map<List<TagModel>>(tagsAll),
+                TagsList = {"A", "B", "C", "D"}
             };
 
             return View("Editor", editArticle);
@@ -153,7 +154,7 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "User, Moderator")]
-        public IActionResult Save(ArticleEditViewModel model, string content)
+        public IActionResult Save(ArticleEditViewModel model, string content, List<string> TagsList)
         {
             var article = _articleRepository.Get(model.Article.Id);
 

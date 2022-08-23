@@ -2,80 +2,55 @@
 
 @{
     ViewData["Title"] = "Edit";
-    int[] temp = new int[Model.TagsAll.Count()];
-    
 }
 
 <div class="row">
     <script src="~/js/ckeditor/ckeditor.js"></script>
 
-    <div class="">
-        @foreach (var tag in Model.TagsAll)
-        {
-            if (Model.TagsArticle.Any(t => t.Id == tag.Id))
+    <form asp-controller="Article" asp-action="Save" method="post">
+        <div id="app">
+            @foreach (var tag in Model.TagsAll)
             {
-                <input type="checkbox" class="btn-check" id="@tag.Name" name="check" autocomplete="off" checked onchange="clickTag(event)">
-                ViewData[tag.Name] = "true";
+                if (Model.TagsArticle.Any(t => t.Id == tag.Id))
+                {
+                    <input type="checkbox" class="btn-check" id="@tag.Name" name="TagsList" autocomplete="off" 
+                           onchange="clickTag(event)" value="@tag.Name" checked>                    
+                }
+                else
+                {
+                    <input type="checkbox" class="btn-check" id="@tag.Name" name="TagsList" autocomplete="off" 
+                           onchange="clickTag(event)" value="@tag.Name">
+                }
+                <label class="btn btn-outline-primary" for="@tag.Name">
+                    @tag.Name
+                </label>
             }
-            else
-            {
-                <input type="checkbox" class="btn-check" id="@tag.Name" name="check" autocomplete="off" onchange="clickTag(event)">
-                ViewData[tag.Name] = "false";
-            }
-            <label class="btn btn-outline-primary" for="@tag.Name">
-                @tag.Name
-            </label>
-            Console.WriteLine($"ViewData[{tag.Name}] = {ViewData[tag.Name]}");
-        }
-    </div>
-    <div>
-        <form asp-controller="Article" asp-action="Save" method="post">        
+        </div>
+        <div>
+
             <div>
                 <input asp-for="Article.Id" type="hidden" />
                 <input asp-for="Article.Published" type="hidden" />
-                @foreach (var tag in Model.TagsAll)
-                {
-                    if ((string)ViewData[tag.Name] == "true")
-                    {
-                        if (Model.Tags == null)
-                        {
-                            Model.Tags = tag.Name;
-                        }
-                        else
-                        {
-                            Model.Tags += "," + tag.Name;
-                        }
-                    }
-                }
-                <input asp-for="Tags" type="hidden" />
-                @foreach(var t in Model.TagsAll)
-                {
-                    <input asp-for="@t.Id" type="hidden"/>
-                    <input asp-for="@t.Name" type="hidden"/>
-                }
-                @foreach(var t in Model.TagsList)
-                {
-                    <input asp-for="@t" name="TagsList" type="hidden"/>
-                }
             </div>
             <div>
                 <b>Название статьи:</b><br>
-                <input asp-for="Article.Title" type="text" size="40" value="@Model.Article.Title" />
+                <input asp-for="Article.Title" type="text" size="50" value="@Model.Article.Title" />
             </div>
-            <br/>
+            <br />
             <div>
-                <textarea asp-for="Article.Content" id="content" name="content">@Model.Article.Content</textarea>
+                <textarea asp-for="Article.Content" name="content">@Model.Article.Content</textarea>
             </div>
+            <br />
             <div>
-                
+
                 <input type="submit" value="Сохранить" onclick="updateTags" />
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function(event) {
-        //CKEDITOR.config.height(25);
+    document.addEventListener("DOMContentLoaded", function (event) {
         var editor = CKEDITOR.replace('content');
     });
 
@@ -85,6 +60,5 @@
         DataView[idFlight] = event.target.checked;
         console.log(idFlight);
         console.log(DataView[idFlight]);
-    }
-
+    };
 </script>

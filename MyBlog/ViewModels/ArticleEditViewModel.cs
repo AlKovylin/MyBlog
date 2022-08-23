@@ -9,7 +9,5 @@ namespace MyBlog.ViewModels
         public ArticleModel Article { get; set; }
         public List<TagModel> TagsArticle = new List<TagModel>();
         public List<TagModel> TagsAll = new List<TagModel>();
-        public string Tags { get; set; }
-        public List<string> TagsList = new List<string>();
     }
 }

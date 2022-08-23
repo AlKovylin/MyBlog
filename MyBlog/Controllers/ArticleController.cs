@@ -141,7 +141,6 @@ namespace MyBlog.Controllers
                 Article = _mapper.Map<ArticleModel>(article),
                 TagsArticle = _mapper.Map<List<TagModel>>(tagsArticle),
                 TagsAll = _mapper.Map<List<TagModel>>(tagsAll),
-                TagsList = {"A", "B", "C", "D"}
             };
 
             return View("Editor", editArticle);
@@ -158,21 +157,23 @@ namespace MyBlog.Controllers
         {
             var article = _articleRepository.Get(model.Article.Id);
 
-            //article = _mapper.Map<Article>(model.Article);
-
             article.Title = model.Article.Title;
 
             article.Content = content;
 
             var allTags = _tagRepository.GetAll();
 
-            article.Tags.Clear();
+            var articleTags = _articleRepository.GetArticleTags(article);
 
-            var inTags = model.Tags.Split(',').ToList();
-
-            foreach (var tag in inTags)
+            foreach(var tag in articleTags)
             {
-                article.Tags.Add(_tagRepository.GetAll().FirstOrDefault(t => t.Name == tag));
+                article.Tags.Remove(tag);
+            }            
+
+            foreach (var tag in TagsList)
+            {
+                var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag);
+                article.Tags.Add(_tag);
             }
 
             article.Modified = DateTime.Now;
@@ -217,9 +218,10 @@ namespace MyBlog.Controllers
             //    _articleRepository.Create(newArticle);
             //}
 
-            //return RedirectToAction("Edit", new { id = article.Id });
+            return RedirectToAction("Edit", "Article", new { id = article.Id });
             //return View("Editor", article.Id);
-            return RedirectToAction("Index", "Article");
+            //return RedirectToAction("Index", "Article");
+            //return RedirectToActionPermanent("Edit", new { id = article.Id });
         }
 
 

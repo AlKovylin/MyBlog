@@ -10,7 +10,10 @@
 
     <div class="col mb-3">
         <button type="button" class="btn btn-outline-primary me-2">Личные данные</button>
-        <button type="button" class="btn btn-outline-primary me-2">Добавить статью</button>
+        <br />
+        <form asp-controller="Article" asp-action="Create" method="get">
+            <button type="submit" class="btn btn-outline-primary me-2">Добавить статью</button>
+        </form>
     </div>
     <br />
     <div class="">
@@ -26,7 +29,7 @@
                     <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
                 }
             </div>
-  
+
             <div class="row g-0 border rounded overflow-hidden flex-md-row mb-3 shadow-sm h-md-250 position-relative">
                 <div class="col p-4 d-flex flex-column position-static">
                     <div class="position-relative">
@@ -34,7 +37,14 @@
                         <strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Published.ToLongDateString()"</strong>
                         <strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Modified.ToLongDateString()"</strong>
                     </div>
-                    <p class="card-text mb-auto">@article.Article.Content.Substring(0, 190).Insert(190, "...")</p>
+                    @if (article.Article.Content.Length >= 190)
+                    {
+                        <p class="card-text mb-auto">@Html.Raw(@article.Article.Content.Substring(0, 190).Insert(190, "..."))</p>
+                    }
+                    else
+                    {
+                        <p class="card-text mb-auto">@Html.Raw(@article.Article.Content)</p>
+                    }
                 </div>
             </div>
             <div>

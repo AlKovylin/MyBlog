@@ -22,7 +22,7 @@ namespace MyBlog.ViewModels
         public string DisplayName { get; set; }
 
         [DataType(DataType.ImageUrl)]
-        [Display(Name = "Фото", Prompt = "Укажите ссылку на картинку")]
+        [Display(Name = "Фото", Prompt = "Укажите ссылку на файл")]
         public string Photo { get; set; }
 
         [DataType(DataType.Text)]

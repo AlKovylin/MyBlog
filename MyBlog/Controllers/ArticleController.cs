@@ -155,70 +155,51 @@ namespace MyBlog.Controllers
         [Authorize(Roles = "User, Moderator")]
         public IActionResult Save(ArticleEditViewModel model, string content, List<string> TagsList)
         {
-            var article = _articleRepository.Get(model.Article.Id);
-
-            article.Title = model.Article.Title;
-
-            article.Content = content;
-
-            var allTags = _tagRepository.GetAll();
-
-            var articleTags = _articleRepository.GetArticleTags(article);
-
-            foreach(var tag in articleTags)
+            if (model.Article.Id > 0)
             {
-                article.Tags.Remove(tag);
-            }            
+                var article = _articleRepository.Get(model.Article.Id);
 
-            foreach (var tag in TagsList)
-            {
-                var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag);
-                article.Tags.Add(_tag);
+                article.Title = model.Article.Title;
+
+                article.Content = content;
+
+                var articleTags = _articleRepository.GetArticleTags(article);
+
+                foreach (var tag in articleTags)
+                {
+                    article.Tags.Remove(tag);
+                }
+
+                foreach (var tag in TagsList)
+                {
+                    var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag);
+                    article.Tags.Add(_tag);
+                }
+
+                article.Modified = DateTime.Now;
+
+                _articleRepository.Update(article);
             }
+            else//если нет создадим
+            {
+                var newArticle = _mapper.Map<Article>(model.Article);
 
-            article.Modified = DateTime.Now;
+                newArticle.Content = content;
 
-            _articleRepository.Update(article);
+                newArticle.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
 
-            //если статья уже есть - обновим её
-            //if(article != null)
-            //{
-            //    article.Title = model.Article.Title;
+                foreach (var tag in TagsList)
+                {
+                    var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag);
+                    newArticle.Tags.Add(_tag);
+                }
 
-            //    article.Content = model.Article.Content;
+                newArticle.Published = DateTime.Now;
 
-            //    article.Tags.Clear();
-
-            //    foreach (var tag in model.TagsArticle)
-            //    {
-            //        var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag.Name);
-
-            //        article.Tags.Add(_tag);
-            //    }
-
-            //    article.Modified = DateTime.Now;
-
-            //    _articleRepository.Update(article);
-            //}
-            //else//если нет создадим
-            //{
-            //    var newArticle = _mapper.Map<Article>(model.Article);
-
-            //    newArticle.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
-
-            //    foreach(var tag in model.TagsArticle)
-            //    {
-            //        var _tag = _tagRepository.GetAll().FirstOrDefault(t => t.Name == tag.Name);
-
-            //        newArticle.Tags.Add(_tag);
-            //    }
-
-            //    newArticle.Published = DateTime.Now;
-
-            //    _articleRepository.Create(newArticle);
-            //}
-
-            return RedirectToAction("Edit", "Article", new { id = article.Id });
+                _articleRepository.Create(newArticle);
+            }
+            return RedirectToAction("MyPage", "User");
+            //return RedirectToAction("Edit", "Article", new { id = article.Id });
             //return View("Editor", article.Id);
             //return RedirectToAction("Index", "Article");
             //return RedirectToActionPermanent("Edit", new { id = article.Id });
@@ -229,18 +210,18 @@ namespace MyBlog.Controllers
         [Authorize(Roles = "User")]
         public IActionResult Create()
         {
-            var article = new Article();
+            var tagsAll = _tagRepository.GetAll();
 
-            article.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
-
-            _articleRepository.Create(article);
-
-            var model = new ArticleEditViewModel()
+            var article = new ArticleEditViewModel()
             {
-                Article = _mapper.Map<ArticleModel>(article),
-                TagsAll = _mapper.Map<List<TagModel>>(_tagRepository.GetAll())
+                Article = new ArticleModel(),
+                TagsAll = _mapper.Map<List<TagModel>>(tagsAll),               
             };
 
+            article.Article.Title = "";
+
+            article.Article.Content = "";
+            
             return View("Editor", article);
         }
 

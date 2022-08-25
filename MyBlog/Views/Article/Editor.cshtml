@@ -8,43 +8,45 @@
     <script src="~/js/ckeditor/ckeditor.js"></script>
 
     <form asp-controller="Article" asp-action="Save" method="post">
-        <div id="app">
+        <div class="row">
             @foreach (var tag in Model.TagsAll)
             {
-                if (Model.TagsArticle.Any(t => t.Id == tag.Id))
-                {
-                    <input type="checkbox" class="btn-check" id="@tag.Name" name="TagsList" autocomplete="off" 
-                           onchange="clickTag(event)" value="@tag.Name" checked>                    
-                }
-                else
-                {
-                    <input type="checkbox" class="btn-check" id="@tag.Name" name="TagsList" autocomplete="off" 
-                           onchange="clickTag(event)" value="@tag.Name">
-                }
-                <label class="btn btn-outline-primary" for="@tag.Name">
-                    @tag.Name
-                </label>
+                <div class="col-auto mr-2">
+                    @if (Model.TagsArticle.Any(t => t.Id == tag.Id))
+                    {
+                        <input type="checkbox" class="form-check-input" id="@tag.Name" name="TagsList" autocomplete="off"
+                               onchange="clickTag(event)" value="@tag.Name" checked>
+                    }
+                    else
+                    {
+                        <input type="checkbox" class="form-check-input" id="@tag.Name" name="TagsList" autocomplete="off"
+                               onchange="clickTag(event)" value="@tag.Name">
+                    }
+                    <label class="form-check-label" for="@tag.Name">@tag.Name</label>
+                </div>
             }
         </div>
         <div>
-
             <div>
                 <input asp-for="Article.Id" type="hidden" />
                 <input asp-for="Article.Published" type="hidden" />
             </div>
+            <br />
             <div>
-                <b>Название статьи:</b><br>
-                
+                <b>Название статьи:</b>
+            </div>
+            <br>
+            <div>
                 <input asp-for="Article.Title" type="text" size="50" value="@Model.Article.Title" />
             </div>
+
             <br />
             <div>
                 <textarea asp-for="Article.Content" name="content">@Model.Article.Content</textarea>
             </div>
             <br />
             <div>
-
-                <input type="submit" value="Сохранить" onclick="updateTags" />
+                <input class="btn btn-sm btn-primary" type="submit" value="Сохранить" onclick="updateTags" />
             </div>
         </div>
     </form>

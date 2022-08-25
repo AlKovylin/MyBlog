@@ -6,7 +6,12 @@ namespace MyBlog.ViewModels
 {
     public class UserViewModel
     {
-        public UserModel User { get; set; }
-        public List<ArticleModel> Articles { get; set; }        
+        public int id { get; set; }
+        public string Email { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string DisplayName { get; set; }
+        public string AboutMy { get; set; }
+        public string Photo { get; set; }
     }
 }

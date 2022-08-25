@@ -9,7 +9,9 @@
     </div>
 
     <div class="col mb-3">
-        <button type="button" class="btn btn-outline-primary me-2">Личные данные</button>
+        <form asp-controller="User" asp-action="Edit" method="get">
+            <button type="submit" class="btn btn-outline-primary me-2">Личные данные</button>
+        </form>
         <br />
         <form asp-controller="Article" asp-action="Create" method="get">
             <button type="submit" class="btn btn-outline-primary me-2">Добавить статью</button>

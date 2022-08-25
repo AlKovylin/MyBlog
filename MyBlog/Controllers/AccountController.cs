@@ -9,7 +9,9 @@ using System.Linq;
 using System;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Data;
-
+using Microsoft.AspNetCore.Authorization;
+using MyBlog.ViewModels;
+using AutoMapper;
 
 namespace MyBlog.Controllers
 {
@@ -17,11 +19,13 @@ namespace MyBlog.Controllers
     {
         private IUserRepository _userRepository;
         private IRepository<Role> _roleRepository;
+        private IMapper _mapper;
 
-        public AccountController(IUserRepository userRepository, IRepository<Role> roleRepository)
+        public AccountController(IUserRepository userRepository, IRepository<Role> roleRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -61,7 +65,7 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string email, string password)
+        public async Task<IActionResult> Register(string email, string password)//RegisterViewModel
         {
             if (ModelState.IsValid)
             {
@@ -83,11 +87,13 @@ namespace MyBlog.Controllers
                     //проверяем успешность добавления в базу
                     user = _userRepository.GetAll().Where(u => u.Email == email && u.Password == password).FirstOrDefault();
 
+                    var model = _mapper.Map<UserViewModel>(user);
+
                     if (user != null)
                     {
                         await Authenticate(user);
 
-                        return RedirectToAction("Index", "Article");
+                        return View("UserData", model);
                     }
                 }
                 else
@@ -135,6 +141,29 @@ namespace MyBlog.Controllers
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             await HttpContext.SignInAsync(claimsPrincipal);//устанавливаем куки для пользователя
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "User, Moderator")]
+        public IActionResult Save(UserViewModel model, string AboutMy)
+        {
+            var user =  _userRepository.Get(model.id);
+
+            //user = _mapper.Map<User>(model);
+
+            user.AboutMy = AboutMy;
+
+            user.Name = model.FirstName + " " + model.LastName;
+
+            user.Email = model.Email;
+
+            user.DisplayName = model.DisplayName;
+
+            user.AboutMy = AboutMy;
+
+            _userRepository.Update(user);
+
+            return RedirectToAction("Mypage", "User");
         }
     }
 }

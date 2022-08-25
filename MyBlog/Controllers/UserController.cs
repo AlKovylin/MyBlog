@@ -62,38 +62,40 @@ namespace MyBlog.Controllers
         [Authorize(Roles = "User, Moderator")]
         public IActionResult Edit()
         {
-            var user = _userRepository.GetAll().Where(u => u.Email == User.Identity.Name);
+            var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
 
-            var editmodel = _mapper.Map<UserEditViewModel>(user);
+            var editmodel = _mapper.Map<UserViewModel>(user);
 
-            return View("Edit", editmodel);
+            //editmodel.FirstName = user.
+
+            return View("UserData", editmodel);
         }
 
-        [Route("Udate")]
-        [HttpPost]
-        [Authorize(Roles = "User, Moderator")]
-        public IActionResult Update(UserEditViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = _userRepository.Get(int.Parse(model.Id));
+        //[Route("Udate")]
+        //[HttpPost]
+        //[Authorize(Roles = "User, Moderator")]
+        //public IActionResult Update(UserEditViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = _userRepository.Get(int.Parse(model.Id));
 
-                user.Email = model.Email;
-                user.Name = model.Name;
-                user.DisplayName = model.DisplayName;
-                user.AboutMy = model.AboutMy;
-                user.Photo = model.Photo;
+        //        user.Email = model.Email;
+        //        user.Name = model.Name;
+        //        user.DisplayName = model.DisplayName;
+        //        user.AboutMy = model.AboutMy;
+        //        user.Photo = model.Photo;
 
-                _userRepository.Update(user);
+        //        _userRepository.Update(user);
 
-                return RedirectToAction("MyPage", "User");
-            }
-            else
-            {
-                ModelState.AddModelError("", "Некорректные данные");
-                return View("Edit", model);
-            }
-        }
+        //        return RedirectToAction("MyPage", "User");
+        //    }
+        //    else
+        //    {
+        //        ModelState.AddModelError("", "Некорректные данные");
+        //        return View("Edit", model);
+        //    }
+        //}
 
         [HttpGet]
         [Authorize(Roles = "Admin, Moderator")]

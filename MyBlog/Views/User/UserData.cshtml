@@ -1,7 +1,7 @@
 ﻿@model MyBlog.ViewModels.UserViewModel;
 
 @{
-    ViewData["Title"] = "Регистрация нового пользователя";
+    ViewData["Title"] = "Настройки";
 }
 
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
@@ -9,8 +9,8 @@
 
 <div class="row g-5">
     <div class="col-md-7 col-lg-8">
-        <h4 class="mb-3">Регистрация нового пользователя</h4>
-        <form class="" asp-controller="Account" asp-action="Save" method="post">
+        <h4 class="mb-3">Ваши настройки</h4>
+        <form class="" asp-controller="User" asp-action="Save" method="post">
             <div>
                 <input asp-for="id" type="hidden" />
             </div>
@@ -23,7 +23,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-5">
                     <label for="LastName" class="form-label">Фамилия</label>
@@ -33,7 +32,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-5">
                     <label for="email" class="form-label">Эл. адрес<span class="text-muted"> (для входа в систему)</span></label>
@@ -43,7 +41,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-5">
                     <label for="email" class="form-label">Название вашего блога</label>
@@ -53,7 +50,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-5">
                     <label for="email" class="form-label">О себе<span class="text-muted"> (расскажите о себе или о своём блоге)</span></label>
@@ -62,10 +58,15 @@
                     </div>
                 </div>
             </div>
-
             <hr class="my-4">
-
-            <button class="w-25 btn btn-primary btn-lg" type="submit">Сохранить</button>
+            <div class="row">
+                <div class="col-auto">
+                    <button class="btn btn-primary" type="submit">Сохранить</button>
+                </div>
+                <div class="col-auto">
+                    <button href="User/MyPage" class="btn btn-secondary" type="submit">Отмена</button>
+                </div>
+            </div>
         </form>
     </div>
 </div>

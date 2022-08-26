@@ -18,7 +18,7 @@ namespace MyBlog
 
             CreateMap<User, UserViewModel>()
                 .ForMember(u => u.FirstName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).First()))
-                .ForMember(u => u.LastName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).Last()));
+                .ForMember(u => u.LastName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).Last()));            
 
             CreateMap<ArticleModel, Article>();
             CreateMap<Article, ArticleModel>();
@@ -33,6 +33,8 @@ namespace MyBlog
             CreateMap<Tag, TagModel>();
 
             CreateMap<TagsViewModel, Tag>();
+
+            CreateMap<Role, RoleModel>();
         }
     }
 }

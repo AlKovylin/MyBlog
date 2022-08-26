@@ -1,0 +1,58 @@
+﻿@model MyBlog.ViewModels.UsersAllViewModel;
+
+@{
+    ViewData["Title"] = "Сведения о пользователях";
+}
+
+<div class="row mb-2">
+    @if (Model != null)
+    {
+        @foreach (var user in @Model.Users)
+        {
+            <div class="col-md-3">
+
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <div class="flex-md-row mb-2 position-relative">
+                            @foreach (var role in user.Roles)
+                            {
+                            <span class="badge badge-success">@role.Name</span>
+                            }
+                        </div>
+                        <div class="col">
+                            <strong class="d-inline-block mb-3 text-primary">@user.FirstName @user.LastName</strong>
+                            <strong class="d-inline-block mb-3 text-success">"@user.Email"</strong>
+                        </div>
+
+                        <!--<form asp-controller="User" asp-action="Edit" asp-route-id="@user.id" method="post">
+                            <button type="submit" class="btn btn-link">
+                                Редактировать
+                            </button>
+                        </form>-->
+
+                        <div class="row">
+
+                            <!--<button href="User/Edit/@user.id" type="button" class="btn btn-outline-primary">Редактировать</button>
+
+                            <button href="Account/Delete/@user.id" type="button" class="btn btn-outline-danger">Удалить</button>-->
+                            <form asp-controller="User" asp-action="Edit" asp-route-id="@user.id" method="post">
+                                <button type="submit" class="btn  btn-primary">Редактировать</button>
+                                
+                            </form>
+                            <button href="Account/Delete/@user.id" class="btn btn-outline-danger">Удалить</button>
+                             
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div>
+            <label> Пока не зарегистрировано ни одного пользователя.</label>
+        </div>
+    }
+</div>

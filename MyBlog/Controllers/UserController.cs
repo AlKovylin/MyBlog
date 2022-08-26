@@ -53,7 +53,6 @@ namespace MyBlog.Controllers
                     });
                 }
             }
-
             return View("MyPage", model);
         }
             
@@ -66,53 +65,49 @@ namespace MyBlog.Controllers
 
             var editmodel = _mapper.Map<UserViewModel>(user);
 
-            //editmodel.FirstName = user.
-
             return View("UserData", editmodel);
         }
 
-        //[Route("Udate")]
-        //[HttpPost]
-        //[Authorize(Roles = "User, Moderator")]
-        //public IActionResult Update(UserEditViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = _userRepository.Get(int.Parse(model.Id));
+        [Route("Edit")]
+        [HttpPost]
+        [Authorize(Roles = "User, Moderator")]
+        public IActionResult Edit(int id)
+        {
+            var user = _userRepository.Get(id);
 
-        //        user.Email = model.Email;
-        //        user.Name = model.Name;
-        //        user.DisplayName = model.DisplayName;
-        //        user.AboutMy = model.AboutMy;
-        //        user.Photo = model.Photo;
+            var editmodel = _mapper.Map<UserViewModel>(user);
 
-        //        _userRepository.Update(user);
-
-        //        return RedirectToAction("MyPage", "User");
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError("", "Некорректные данные");
-        //        return View("Edit", model);
-        //    }
-        //}
+            return View("UserData", editmodel);
+        }        
 
         [HttpGet]
         [Authorize(Roles = "Admin, Moderator")]
         public IActionResult Index() => View(_userRepository.GetAll());
 
 
-        [HttpDelete]
-        [Authorize(Roles = "Admin")]
-        public IActionResult Delete(string id)
-        {
-            var user = _userRepository.Get(int.Parse(id));
 
-            if (user != null)
-            {
-                _userRepository.Delete(user);
-            }
-            return RedirectToAction("Index");
+
+        [HttpPost]
+        [Authorize(Roles = "User")]
+        public IActionResult Save(UserViewModel model, string AboutMy)
+        {
+            var user = _userRepository.Get(model.id);
+
+            //user = _mapper.Map<User>(model);
+
+            user.AboutMy = AboutMy;
+
+            user.Name = model.FirstName + " " + model.LastName;
+
+            user.Email = model.Email;
+
+            user.DisplayName = model.DisplayName;
+
+            user.AboutMy = AboutMy;
+
+            _userRepository.Update(user);
+
+            return RedirectToAction("Mypage", "User");
         }
     }
 }

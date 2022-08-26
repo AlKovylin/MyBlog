@@ -12,6 +12,7 @@ using MyBlog.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using MyBlog.ViewModels;
 using AutoMapper;
+using MyBlog.Infrastructure.Business.Models;
 
 namespace MyBlog.Controllers
 {
@@ -36,21 +37,21 @@ namespace MyBlog.Controllers
         public async Task<ActionResult> Login(string email, string password)
         {
 
-                // поиск пользователя в бд
-                User user = null;
+            // поиск пользователя в бд
+            User user = null;
 
-                user = _userRepository.GetAll().FirstOrDefault(u => u.Email == email && u.Password == password);
+            user = _userRepository.GetAll().FirstOrDefault(u => u.Email == email && u.Password == password);
 
-                if (user != null)
-                {
-                    await Authenticate(user);
-                    return RedirectToAction("Index", "Article");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
-                }
-            
+            if (user != null)
+            {
+                await Authenticate(user);
+                return RedirectToAction("Index", "Article");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+            }
+
             return View();
         }
 
@@ -143,13 +144,12 @@ namespace MyBlog.Controllers
             await HttpContext.SignInAsync(claimsPrincipal);//устанавливаем куки для пользователя
         }
 
+        //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА
         [HttpPost]
         [Authorize(Roles = "User, Moderator")]
         public IActionResult Save(UserViewModel model, string AboutMy)
         {
-            var user =  _userRepository.Get(model.id);
-
-            //user = _mapper.Map<User>(model);
+            var user = _userRepository.Get(model.id);
 
             user.AboutMy = AboutMy;
 
@@ -163,7 +163,45 @@ namespace MyBlog.Controllers
 
             _userRepository.Update(user);
 
-            return RedirectToAction("Mypage", "User");
+            return RedirectToAction("GetUsers");
         }
+
+        //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА
+        [HttpGet]
+        [Authorize(Roles = "User, Moderator")]
+        public IActionResult GetUsers()
+        {
+            var model = new UsersAllViewModel();
+
+            var users = _userRepository.GetAll();
+
+            foreach(var user in users)
+            {
+                var roles = _userRepository.GetUserRoles(user);
+
+                var userModel = _mapper.Map<UserViewModel>(user);
+
+                userModel.Roles = _mapper.Map<List<RoleModel>>(roles);
+
+                model.Users.Add(userModel);
+            }
+
+            return View(model);
+        }
+
+        //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА или админа
+        [HttpDelete]
+        [Authorize(Roles = "User, Admin")]
+        public IActionResult Delete(int id)
+        {
+            var user = _userRepository.Get(id);
+
+            if (user != null)
+            {
+                _userRepository.Delete(user);
+            }
+            return RedirectToAction("GetUsers");
+        }
+
     }
 }

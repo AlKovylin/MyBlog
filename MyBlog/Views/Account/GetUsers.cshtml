@@ -4,6 +4,9 @@
     ViewData["Title"] = "Сведения о пользователях";
 }
 
+<div class="text-center">
+    <h3 class="display-4 fst-italic py-3">Сведения о пользователях</h3>
+</div>
 <div class="row mb-2">
     @if (Model != null)
     {
@@ -17,11 +20,13 @@
                         <div class="flex-md-row mb-2 position-relative">
                             @foreach (var role in user.Roles)
                             {
-                            <span class="badge badge-success">@role.Name</span>
+                                <span class="badge text-bg-primary">@role.Name</span>
                             }
                         </div>
-                        <div class="col">
-                            <strong class="d-inline-block mb-3 text-primary">@user.FirstName @user.LastName</strong>
+                        <div class="row">
+                            <strong class="d-inline-block text-primary">@user.FirstName @user.LastName</strong>
+                        </div>
+                        <div class="row">
                             <strong class="d-inline-block mb-3 text-success">"@user.Email"</strong>
                         </div>
 
@@ -31,17 +36,21 @@
                             </button>
                         </form>-->
 
-                        <div class="row">
+                        <div>
 
                             <!--<button href="User/Edit/@user.id" type="button" class="btn btn-outline-primary">Редактировать</button>
 
                             <button href="Account/Delete/@user.id" type="button" class="btn btn-outline-danger">Удалить</button>-->
-                            <form asp-controller="User" asp-action="Edit" asp-route-id="@user.id" method="post">
-                                <button type="submit" class="btn  btn-primary">Редактировать</button>
-                                
+                            <form asp-controller="Account" asp-action="Edit" asp-route-id="@user.id" method="post">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Редактировать</button>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button href="Account/Delete/@user.id" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                    </div>
+                                </div>
                             </form>
-                            <button href="Account/Delete/@user.id" class="btn btn-outline-danger">Удалить</button>
-                             
 
                         </div>
                     </div>

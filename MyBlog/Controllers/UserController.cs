@@ -15,17 +15,17 @@ namespace MyBlog.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IArticleRepository _articleRepository;
-        private readonly IRepository<Tag> _tagRepository;
+        private readonly IRepository<Role> _roleRepository;
         private readonly IMapper _mapper;
 
         public UserController(IUserRepository userRepository, 
                               IArticleRepository articleRepository, 
                               IMapper mapper,
-                              IRepository<Tag> tagRepository)
+                              IRepository<Role> roleRepository)
         {
             _userRepository = userRepository;
             _articleRepository = articleRepository;
-            _tagRepository = tagRepository;
+            _roleRepository = roleRepository;
             _mapper = mapper;
         }
 
@@ -58,7 +58,7 @@ namespace MyBlog.Controllers
             
         [Route("Edit")]
         [HttpGet]
-        [Authorize(Roles = "User, Moderator")]
+        [Authorize(Roles = "User")]
         public IActionResult Edit()
         {
             var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
@@ -66,19 +66,7 @@ namespace MyBlog.Controllers
             var editmodel = _mapper.Map<UserViewModel>(user);
 
             return View("UserData", editmodel);
-        }
-
-        [Route("Edit")]
-        [HttpPost]
-        [Authorize(Roles = "User, Moderator")]
-        public IActionResult Edit(int id)
-        {
-            var user = _userRepository.Get(id);
-
-            var editmodel = _mapper.Map<UserViewModel>(user);
-
-            return View("UserData", editmodel);
-        }        
+        }     
 
         [HttpGet]
         [Authorize(Roles = "Admin, Moderator")]
@@ -103,7 +91,7 @@ namespace MyBlog.Controllers
 
             user.DisplayName = model.DisplayName;
 
-            user.AboutMy = AboutMy;
+            user.AboutMy = AboutMy;                        
 
             _userRepository.Update(user);
 

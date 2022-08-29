@@ -46,7 +46,8 @@ namespace MyBlog.Controllers
 
             _commentRepository.Create(newComment);
 
-            return RedirectToAction("Read", "Article", new { id = articleId});
+            //return RedirectToAction("Read", "Article", new { id = articleId});
+            return RedirectToAction("Index", "Article");
         }
 
         [Authorize(Roles = "User, Moderator")]

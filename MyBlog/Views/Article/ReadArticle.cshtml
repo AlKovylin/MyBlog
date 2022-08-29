@@ -5,53 +5,69 @@
     <div class="text-center">
         <h3 class="display-4 fst-italic py-5">@Model.Article.Title</h3>
     </div>
-
-    <div class="flex-md-row mb-2 position-relative">
-        @foreach (var tag in @Model.Tags)
-        {
-            <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
-        }
+    <div class="flex-md-row">
+        <div class="col">
+            @foreach (var tag in @Model.Tags)
+            {
+                <p class="d-inline-block text-primary mr-2">@tag.Name</p>
+            }
+        </div>
     </div>
-
     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
             <div class="position-relative">
                 <strong class="d-inline-block mb-3 text-primary">@Model.Author.Name</strong>
                 <strong class="d-inline-block mb-3 text-success float-end">"@Model.Author.DisplayName"</strong>
             </div>
-            <div class="mb-1 text-muted">@Model.Article.Published.ToLongDateString()</div>
-            @Html.Raw(@Model.Article.Content)
+            <div class="mb-3 text-muted">@Model.Article.Published.ToLongDateString()</div>
+            <div>@Html.Raw(@Model.Article.Content)</div>
         </div>
     </div>
-    <div>
-        <h5>Комментарии</h5>
-    </div>
-    <br />
-    @if (@Model.Comments.Count > 0)
-    {
-        @foreach (var comment in @Model.Comments)
+    <div class="col-5">
+        <div class="mb-3">
+            <h5>Комментарии к статье</h5>
+        </div>
+        <form asp-controller="Comment" asp-action="Create" method="post">
+            <div>
+                <textarea cols="65" rows="2" placeholder="Ваш комментарий" name="comment"></textarea>
+            </div>
+            <div>
+                <input asp-for="Article.Id" name="articleId" type="hidden" />
+            </div>
+            <div>
+                @if (User.IsInRole("User"))
+                {
+                    <button type="submit" class="btn btn-sm btn-outline-primary mb-3">Оставить комментарий</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-sm btn-outline-primary mb-3" disabled>Оставить комментарий</button>
+                    <p class="text-muted">(комментарии могут оставлять только зарегистрированные пользователи)</p>
+                }
+            </div>
+        </form>
+        <hr class="my-2">
+        @if (@Model.Comments.Count > 0)
         {
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                    <div class="position-relative">
-                        <p class="d-inline-block mb-3 text-primary">@comment.Created.ToLongDateString()</p>
-                    </div>
-                    <div>
-                        <p class="card-text mb-auto">@comment.Content</p>
-                    </div>
+            @foreach (var comment in @Model.Comments)
+            {
+
+                <div class="position-relative">
+                    <p class="d-inline-block font-weight-bold">Автор</p>
+                    <p class="d-inline-block float-end text-primary">@comment.Created.ToLongDateString()</p>
                 </div>
+                <div>
+                    <p class="card-text">@comment.Content</p>
+                </div>
+                <hr class="my-2">
+            }
+        }
+        else
+        {
+            <div>
+                <p>Пока здесь нет комментариев. Стань первым!</p>
             </div>
         }
-    }
-    else
-    {
-        <div>
-            <p>Пока здесь нет комментариев. Стань первым!</p>
-        </div>
-    }
-    <div>
-        <!--<a href="" data-toggle="modal" data-target="#Comment" class="stretched-link">Добавить комментарий...</a>-->
-        <button type="button" class="btn btn-outline-primary me-2" data-toggle="modal" data-target="#Comment">Добавить комментарий...</button>
     </div>
 }
 else
@@ -60,49 +76,3 @@ else
         <h3 class="display-4 fst-italic py-5">Не удалось получить данные</h3>
     </div>
 }
-
-<!-- Modal -->
-<div class="modal fade bg-secondary py-5" id="Comment" role="dialog" aria-labelledby="inModaLable" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-3 shadow">
-            <div class="modal-header p-5 pb-4 border-bottom-0">
-                <h2 class="fw-bold mb-0">Комментарий</h2>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body p-5 pt-0">
-                <form asp-controller="Comment" asp-action="Create" method="post">
-                    <div class="form-floating mb-3">
-                        <textarea rows="8" class="form-control rounded-3" name="comment" id="floatingInput"></textarea>
-                        <label for="floatingInput">Комментарий</label>
-                    </div>
-                    <div>
-                        <input asp-for="Article.Id" name="articleId" type="hidden" />
-                    </div>
-                    <button class="w-50 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Добавить</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function updatePostID(val, comment) {
-
-        var args = {};
-        args.PostID = val;
-        args.Comment = comment;
-
-        $.ajax({
-            type: "POST",
-            url: controllerActionMethodUrlHere,
-            contentType: "application/json; charset=utf-8",
-            data: args,
-            dataType: "json",
-            success: function(msg) {
-                // Something afterwards here
-
-            }
-        });
-    }
-</script>

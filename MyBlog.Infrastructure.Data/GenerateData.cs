@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MyBlog.Domain.Core;
 
 namespace MyBlog.Infrastructure.Data
@@ -40,7 +38,7 @@ namespace MyBlog.Infrastructure.Data
                 AboutMy = "Увлечённый программист",
             };
 
-            user1.Role.Add(roleUser);
+            user1.Role.Add(roleUser);            
 
             var user2 = new User()
             {
@@ -51,7 +49,7 @@ namespace MyBlog.Infrastructure.Data
                 AboutMy = "IT специалист с большим опытом",
             };
 
-            user2.Role.Add(roleAdmin);
+            user2.Role.AddRange(new List<Role>() { roleUser, roleAdmin });
 
             var user3 = new User()
             {
@@ -62,7 +60,7 @@ namespace MyBlog.Infrastructure.Data
                 AboutMy = "Мастер крутых решений",
             };
 
-            user3.Role.Add(roleModerator);
+            user3.Role.AddRange(new List<Role>() { roleUser, roleModerator });
 
             var user4 = new User()
             {
@@ -70,10 +68,10 @@ namespace MyBlog.Infrastructure.Data
                 Email = "ech@ya.ru",
                 Password = "11111",
                 DisplayName = "Перезагрузка",
-                AboutMy = "HR в IT",
+                AboutMy = "Программист",
             };
 
-            user4.Role.AddRange(new List<Role>() { roleUser, roleAdmin });
+            user4.Role.AddRange(new List<Role>() { roleUser });
 
             _db.Users.AddRange(user1, user2, user3, user4);
 

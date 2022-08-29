@@ -5,19 +5,19 @@
 @if (Model != null)
 {
     <div class="text-center">
-        <h3 class="display-4 fst-italic py-3">Личный кабинет</h3>
+        <h3 class="display-4 fst-italic py-3">Персональный блог</h3>
     </div>
 
     <div class="row">
         <div class="col-auto">
             <form asp-controller="User" asp-action="Edit" method="get">
-                <button type="submit" class="btn btn-outline-primary">Настройки</button>
+                <button type="submit" class="btn btn-sm btn-outline-primary">Настройки</button>
             </form>
         </div>
         <br />
         <div class="col-auto">
             <form asp-controller="Article" asp-action="Create" method="get">
-                <button type="submit" class="btn btn-outline-primary">Добавить статью</button>
+                <button type="submit" class="btn btn-sm btn-outline-primary">Добавить статью</button>
             </form>
         </div>
     </div>
@@ -27,21 +27,23 @@
     </div>
     <br />
     <div class="flex-md-row mb-2 position-relative col-md-10">
+        @if(Model.AllArticles.Count > 0)
+        {
         @foreach (var article in @Model.AllArticles)
         {
-            <div class="">
-                @foreach (var tag in article.Tags)
-                {
-                    <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
-                }
-            </div>
-
             <div class="row g-0 border rounded overflow-hidden flex-md-row mb-3 shadow-sm h-md-250 position-relative">
                 <div class="col p-4 d-flex flex-column position-static">
+                    <div class="">
+                        @foreach (var tag in article.Tags)
+                        {
+                            <span class="badge text-bg-primary">@tag.Name</span>
+                        }
+                    </div>
+                    <br />
                     <div class="position-relative">
                         <strong class="d-inline-block mb-3 text-primary">@article.Article.Title</strong>
                         <strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Published.ToLongDateString()"</strong>
-                        <strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Modified.ToLongDateString()"</strong>
+                        <!--<strong class="d-inline-block mb-3 text-success float-end">"@article.Article.Modified.ToLongDateString()"</strong>-->
                     </div>
                     @if (article.Article.Content.Length >= 190)
                     {
@@ -53,15 +55,26 @@
                     }
                 </div>
             </div>
-            <div class="row">
-
-                    <form asp-controller="Article" asp-action="Edit" asp-route-id="@article.Article.Id" method="post">
-                        <button type="submit" class="btn  btn-primary">Редактировать</button>
-                        <button href="Article/Delete/@article.Article.Id" type="button" class="btn btn-outline-danger">Удалить</button>
-                    </form>
-
+            <div>
+                <div class="row">
+                    <div class="col-auto">
+                        <form asp-controller="Article" asp-action="Edit" asp-route-id="@article.Article.Id" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Редактировать</button>
+                        </form>
+                    </div>
+                    <div class="col-auto">
+                        <form asp-controller="Article" asp-action="Delete" asp-route-id="@article.Article.Id" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <br />
+            }
+        }
+        else
+        {
+            <p>У вас нет ни одной статьи</p>
         }
     </div>
 }

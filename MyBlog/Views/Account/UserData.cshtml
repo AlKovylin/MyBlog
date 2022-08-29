@@ -9,8 +9,35 @@
 
 <div class="row g-5">
     <div class="col-md-7 col-lg-8">
-        <h4 class="mb-3">Ваши настройки</h4>
-        <form class="" asp-controller="User" asp-action="Save" method="post">
+        <h4 class="mb-3">Редактирование данных пользователя</h4>
+        <form class="" asp-controller="Account" asp-action="Save" method="post">
+            <div class="row mb-3">
+                @foreach (var role in Model.AllRoles)
+                {
+                    <div class="col-auto mr-2">
+                        @if (Model.Roles.Any(r => r.Id == role.Id))
+                        {
+                            @if (role.Name != "User")
+                            {
+                                <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
+                                        onchange="clickTag(event)" value="@role.Name" checked>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
+                                        onchange="clickTag(event)" value="@role.Name" checked disabled>
+                                <input name="RolesList" value="@role.Name" type="hidden" />
+                            }
+                        }
+                        else
+                        {
+                            <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
+                                    onchange="clickTag(event)" value="@role.Name">
+                        }
+                        <label class="form-check-label" for="@role.Name">@role.Name</label>
+                    </div>
+                }
+            </div>
             <div>
                 <input asp-for="id" type="hidden" />
             </div>
@@ -67,7 +94,7 @@
         </form>
         <div class="row">
             <div class="col-auto">
-                <form asp-controller="User" asp-action="MyPage" method="get">
+                <form asp-controller="Account" asp-action="GetUsers" method="get">
                     <button class="btn btn-sm btn-outline-secondary" type="submit">Отмена</button>
                 </form>
             </div>

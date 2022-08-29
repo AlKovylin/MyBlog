@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyBlog.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
@@ -145,28 +144,6 @@ namespace MyBlog.Controllers
         }
 
         //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА
-        [HttpPost]
-        [Authorize(Roles = "User, Moderator")]
-        public IActionResult Save(UserViewModel model, string AboutMy)
-        {
-            var user = _userRepository.Get(model.id);
-
-            user.AboutMy = AboutMy;
-
-            user.Name = model.FirstName + " " + model.LastName;
-
-            user.Email = model.Email;
-
-            user.DisplayName = model.DisplayName;
-
-            user.AboutMy = AboutMy;
-
-            _userRepository.Update(user);
-
-            return RedirectToAction("GetUsers");
-        }
-
-        //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА
         [HttpGet]
         [Authorize(Roles = "User, Moderator")]
         public IActionResult GetUsers()
@@ -175,7 +152,7 @@ namespace MyBlog.Controllers
 
             var users = _userRepository.GetAll();
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 var roles = _userRepository.GetUserRoles(user);
 
@@ -187,6 +164,63 @@ namespace MyBlog.Controllers
             }
 
             return View(model);
+        }
+
+        [Route("Edit")]
+        [HttpPost]
+        [Authorize(Roles = "Moderator")]
+        public IActionResult Edit(int id)
+        {
+            var user = _userRepository.Get(id);
+
+            var editmodel = _mapper.Map<UserViewModel>(user);
+
+            var userRoles = _userRepository.GetUserRoles(user);
+
+            editmodel.Roles = _mapper.Map<List<RoleModel>>(userRoles);
+
+            var allRoles = _roleRepository.GetAll();
+
+            editmodel.AllRoles = _mapper.Map<List<RoleModel>>(allRoles);
+
+            return View("UserData", editmodel);
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "Moderator")]
+        public IActionResult Save(UserViewModel model, string AboutMy, List<string> RolesList)
+        {
+            var user = _userRepository.Get(model.id);
+
+            //user = _mapper.Map<User>(model);
+
+            user.AboutMy = AboutMy;
+
+            user.Name = model.FirstName + " " + model.LastName;
+
+            user.Email = model.Email;
+
+            user.DisplayName = model.DisplayName;
+
+            user.AboutMy = AboutMy;
+
+            var userRoles = _userRepository.GetUserRoles(user);
+
+            foreach (var role in userRoles)
+            {
+                user.Role.Remove(role);
+            }
+
+            foreach (var role in RolesList)
+            {
+                var _role = _roleRepository.GetAll().FirstOrDefault(r => r.Name == role);
+                user.Role.Add(_role);
+            }
+
+            _userRepository.Update(user);
+
+            return RedirectToAction("GetUsers", "Account");
         }
 
         //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА или админа
@@ -202,6 +236,5 @@ namespace MyBlog.Controllers
             }
             return RedirectToAction("GetUsers");
         }
-
     }
 }

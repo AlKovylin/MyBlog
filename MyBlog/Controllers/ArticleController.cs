@@ -259,7 +259,7 @@ namespace MyBlog.Controllers
 
             _articleRepository.Delete(article);
 
-            return View();
+            return RedirectToAction("MyPage", "User");
         }
     }
 }

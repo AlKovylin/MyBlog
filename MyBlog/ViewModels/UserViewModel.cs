@@ -14,5 +14,6 @@ namespace MyBlog.ViewModels
         public string AboutMy { get; set; }
         public string Photo { get; set; }
         public List<RoleModel> Roles = new List<RoleModel>();
+        public List<RoleModel> AllRoles = new List<RoleModel>();
     }
 }

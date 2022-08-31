@@ -16,6 +16,7 @@ namespace MyBlog
             CreateMap<UserViewModel, User>()
                 .ForMember(u => u.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"));
 
+            //скользкое решение, если имя или фамилия будут состоять из двух слов
             CreateMap<User, UserViewModel>()
                 .ForMember(u => u.FirstName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).First()))
                 .ForMember(u => u.LastName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).Last()));            
@@ -29,12 +30,15 @@ namespace MyBlog
             CreateMap<CommentModel, Comment>();
             CreateMap<Comment, CommentModel>();
 
+            CreateMap<Comment, CommentViewModel>();
+
             CreateMap<TagModel, Tag>();
             CreateMap<Tag, TagModel>();
 
             CreateMap<TagsViewModel, Tag>();
 
             CreateMap<Role, RoleModel>();
+            CreateMap<Role, RoleViewModel>();
         }
     }
 }

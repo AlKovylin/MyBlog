@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Business.Models;
 using MyBlog.ViewModels;
@@ -15,22 +14,23 @@ namespace MyBlog.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IArticleRepository _articleRepository;
-        private readonly IRepository<Role> _roleRepository;
         private readonly IMapper _mapper;
 
         public UserController(IUserRepository userRepository, 
                               IArticleRepository articleRepository, 
-                              IMapper mapper,
-                              IRepository<Role> roleRepository)
+                              IMapper mapper)
         {
             _userRepository = userRepository;
             _articleRepository = articleRepository;
-            _roleRepository = roleRepository;
             _mapper = mapper;
         }
 
-
+        /// <summary>
+        /// Возвращает личную страницу пользователя
+        /// </summary>
+        /// <returns></returns>
         [Route("MyPage")]
+        [Authorize(Roles = "User")]
         [HttpGet]
         public IActionResult MyPage()
         {
@@ -55,7 +55,11 @@ namespace MyBlog.Controllers
             }
             return View("MyPage", model);
         }
-            
+        
+        /// <summary>
+        /// Возвращает страниц редактирования данных пользователя
+        /// </summary>
+        /// <returns></returns>
         [Route("Edit")]
         [HttpGet]
         [Authorize(Roles = "User")]
@@ -66,15 +70,14 @@ namespace MyBlog.Controllers
             var editmodel = _mapper.Map<UserViewModel>(user);
 
             return View("UserData", editmodel);
-        }     
+        }                   
 
-        [HttpGet]
-        [Authorize(Roles = "Admin, Moderator")]
-        public IActionResult Index() => View(_userRepository.GetAll());
-
-
-
-
+        /// <summary>
+        /// Сохраняет данные пользователя в бд
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="AboutMy"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "User")]
         public IActionResult Save(UserViewModel model, string AboutMy)

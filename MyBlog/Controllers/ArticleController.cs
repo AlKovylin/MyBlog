@@ -19,11 +19,11 @@ namespace MyBlog.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-       public ArticleController(IArticleRepository articleRepository, 
-                                IRepository<Comment> commentRepository,
-                                IRepository<Tag> tagRepository,
-                                IUserRepository userRepository, 
-                                IMapper mapper)
+        public ArticleController(IArticleRepository articleRepository,
+                                 IRepository<Comment> commentRepository,
+                                 IRepository<Tag> tagRepository,
+                                 IUserRepository userRepository,
+                                 IMapper mapper)
         {
             _articleRepository = articleRepository;
             _commentRepository = commentRepository;
@@ -38,10 +38,10 @@ namespace MyBlog.Controllers
         /// <returns></returns>
         [HttpGet]
         public IActionResult Index()
-        {    
+        {
             var allArticles = new ArticlesAllViewModel<ArticleViewModel>();
 
-            var articles = _articleRepository.GetAll();
+            var articles = _articleRepository.GetAll().OrderByDescending(a => a.Published).ToList();
 
             if (articles != null)
             {
@@ -52,13 +52,26 @@ namespace MyBlog.Controllers
 
                     var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
 
+                    var commentsModelList = new List<CommentModel>();
+
+                    foreach (var comment in comments)
+                    {
+                        var _user = _userRepository.GetAll().FirstOrDefault(u => u.Id == comment.UserId);
+
+                        var _comment = _mapper.Map<CommentModel>(comment);
+
+                        _comment.User = _mapper.Map<UserModel>(_user);
+
+                        commentsModelList.Add(_comment);
+                    }
+
                     var tags = _articleRepository.GetArticleTags(article);
 
                     allArticles.AllArticles.Add(new ArticleViewModel
                     {
                         Article = _mapper.Map<ArticleModel>(article),
                         Author = _mapper.Map<UserModel>(user),
-                        Comments = _mapper.Map<List<CommentModel>>(comments),
+                        Comments = commentsModelList,
                         Tags = _mapper.Map<List<TagModel>>(tags)
                     });
                 }
@@ -91,35 +104,13 @@ namespace MyBlog.Controllers
             var model = new ArticleViewModel()
             {
                 Article = _mapper.Map<ArticleModel>(article),
-                Author= _mapper.Map<UserModel>(user),
-                Comments= _mapper.Map<List<CommentModel>>(comments),
-                Tags= _mapper.Map<List<TagModel>>(tags)
+                Author = _mapper.Map<UserModel>(user),
+                Comments = _mapper.Map<List<CommentModel>>(comments),
+                Tags = _mapper.Map<List<TagModel>>(tags)
             };
 
             return View("ReadArticle", model);
-        }
-
-        /// <summary>
-        /// Получение своих статей авторизованным пользователем
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize]
-        public IActionResult AutorArticles() 
-        {
-            var author = _userRepository.GetAll().Where(u => u.Email == User.Identity.Name) as User;
-
-            var articles = _articleRepository.GetAll().Where(a => a.User == author);
-
-            if (articles != null)
-            {
-                return View("AuthorArticles", articles);
-            }
-            else
-            {
-                return View("AuthorArticles", "У вас пока нет статей.");
-            }
-        }
+        }        
 
         /// <summary>
         /// Получение конкретной статьи для редактирования
@@ -127,7 +118,7 @@ namespace MyBlog.Controllers
         /// <param name="articleId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "User, Moderator")]
+        [Authorize(Roles = "User")]
         public IActionResult Edit(int Id)
         {
             var article = _articleRepository.Get(Id);
@@ -143,6 +134,13 @@ namespace MyBlog.Controllers
                 TagsAll = _mapper.Map<List<TagModel>>(tagsAll),
             };
 
+            if (User.IsInRole("Moderator"))
+            {
+                var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
+
+                editArticle.Comments = _mapper.Map<List<CommentModel>>(comments);
+            }
+
             return View("Editor", editArticle);
         }
 
@@ -152,7 +150,7 @@ namespace MyBlog.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "User, Moderator")]
+        [Authorize(Roles = "User")]
         public IActionResult Save(ArticleEditViewModel model, string content, List<string> TagsList)
         {
             if (model.Article.Id > 0)
@@ -199,6 +197,8 @@ namespace MyBlog.Controllers
                 _articleRepository.Create(newArticle);
             }
             return RedirectToAction("MyPage", "User");
+
+            //не удаётся сохранить статью и остаться на странице путём её перезагрузки
             //return RedirectToAction("Edit", "Article", new { id = article.Id });
             //return View("Editor", article.Id);
             //return RedirectToAction("Index", "Article");
@@ -215,13 +215,13 @@ namespace MyBlog.Controllers
             var article = new ArticleEditViewModel()
             {
                 Article = new ArticleModel(),
-                TagsAll = _mapper.Map<List<TagModel>>(tagsAll),               
+                TagsAll = _mapper.Map<List<TagModel>>(tagsAll),
             };
 
             article.Article.Title = "";
 
             article.Article.Content = "";
-            
+
             return View("Editor", article);
         }
 
@@ -229,11 +229,11 @@ namespace MyBlog.Controllers
         [Authorize(Roles = "User")]
         public IActionResult Create(ArticleCreateViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var newArticle = _mapper.Map<Article>(model);
 
-                foreach(var tag in model.Tags)
+                foreach (var tag in model.Tags)
                 {
                     newArticle.Tags.Add(_tagRepository.Get(tag.Id));
                 }
@@ -252,7 +252,7 @@ namespace MyBlog.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User, Moderator")]
+        [Authorize(Roles = "User")]
         public IActionResult Delete(string id)
         {
             var article = _articleRepository.Get(int.Parse(id));

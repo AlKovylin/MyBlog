@@ -1,0 +1,29 @@
+﻿@model MyBlog.ViewModels.CommentViewModel
+
+@{
+    ViewData["Title"] = "Редактирование комментария";
+}
+
+
+<div class="text-center">
+    <h3 class="display-4 fst-italic py-3">Редактирование комментария</h3>
+</div>
+<form asp-controller="Comment" asp-action="Update" method="post">
+    <div>
+        <textarea asp-for="Content" cols="65" rows="8">@Model.Content</textarea>
+    </div>
+    <div>
+        <input asp-for="Id" type="hidden"/>
+        <input asp-for="ArticleId" type="hidden"/>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-sm btn-outline-primary mb-3">Сохранить</button>
+    </div>
+</form>
+<div class="row">
+    <div class="col-auto">
+        <form asp-controller="" asp-action="" method="get">
+            <button class="btn btn-sm btn-outline-secondary" type="submit">Отмена</button>
+        </form>
+    </div>
+</div>

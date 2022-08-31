@@ -35,7 +35,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="GetUsers">Пользователи</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Роли</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Роли</a>
                             </li>
                         </ul>
                     </div>
@@ -55,9 +55,10 @@
                         }
                         else
                         {
-                            <div>
+                            <div>                                
                                 <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="btn btn-outline-primary me-2">Выйти</button>
+                                    <strong class="d-inline-block mb-2 text-primary">"@User.Identity.Name"</strong>
+                                    <button type="submit" class="d-inline-block btn btn-outline-primary me-2">Выйти</button>
                                 </form>
                             </div>
                         }

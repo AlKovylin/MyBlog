@@ -1,0 +1,42 @@
+﻿@model MyBlog.ViewModels.RolesViewModel;
+
+@{
+    ViewData["Title"] = "Роли";
+}
+
+<div class="text-center">
+    <h3 class="display-4 fst-italic py-3">Роли пользователей</h3>
+</div>
+
+
+<div class="row mb-2">
+    @foreach (var role in @Model.AllRoles)
+    {
+        <div class="col-md-3">
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <div class="flex-md-row mb-2 position-relative">
+                        <div class="row">
+                            <h5 class="text-primary">@role.Name</h5>
+                        </div>
+                        <div class="row">
+                            <p class="mb-3 text-body">"@role.Description"</p>
+                        </div>
+                        <div>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <form asp-controller="Role" asp-action="Edit" asp-route-id="@role.Id" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Редактировать</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <form asp-controller="Role" asp-action="Edit" asp-route-id="0" method="post">
+        <button type="submit" class="btn btn-sm btn-outline-primary">Добавить роль</button>
+    </form>
+</div>

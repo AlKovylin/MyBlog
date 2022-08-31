@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Database\" />
-    <Folder Include="Views\Comment\" />
   </ItemGroup>
 
 </Project>

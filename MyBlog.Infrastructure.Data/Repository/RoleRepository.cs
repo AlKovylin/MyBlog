@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyBlog.Domain.Core;
-using MyBlog.Domain.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
+﻿using MyBlog.Domain.Core;
 
 namespace MyBlog.Infrastructure.Data.Repository
 {

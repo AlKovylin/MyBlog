@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace MyBlog.Controllers
 {
-    //[Authorize(Roles = "Moderator")]
+    [Authorize(Roles = "Moderator")]
     public class TagController : Controller
     {
         private readonly IRepository<Tag> _tagRepository;

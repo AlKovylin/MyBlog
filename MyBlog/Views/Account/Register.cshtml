@@ -11,15 +11,16 @@
     <div class="col-md-7 col-lg-8">
         <h4 class="mb-3">Регистрация нового пользователя</h4>
         <form class="" asp-controller="Account" asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly"></div>
             <div class="row">
                 <div class="col-md-5">
                     <label for="email" class="form-label">Эл. адрес<span class="text-muted"> (для входа в систему)</span></label>
                     <div class="input-group has-validation">
                         <input asp-for="Email" type="text" class="form-control" id="email" placeholder="exampl@yandex.ru" required="">
                         <span asp-validation-for="Email" class="text-danger"></span>
-                        <!--<div class="invalid-feedback">
-        Имя пользователя обязательно.
-    </div>-->
+                        <div class="invalid-feedback">
+                            Имя пользователя обязательно.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -28,9 +29,9 @@
                     <label for="pass1" class="form-label">Пароль</label>
                     <input asp-for="Password" type="text" class="form-control" id="pass1" placeholder="*********" required="">
                     <span asp-validation-for="Password" class="text-danger"></span>
-                    <!--<div class="invalid-feedback">
-        Пожалуйста, введите пароль.
-    </div>-->
+                    <div class="invalid-feedback">
+                            Пожалуйста, введите пароль.
+                    </div>
                 </div>
             </div>
             <div class="row">

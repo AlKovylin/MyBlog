@@ -9,13 +9,13 @@ namespace MyBlog.ViewModels
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Введите пароль")]
-        [StringLength(20, ErrorMessage = "Поле {0} должно иметь не менее {2} и не более {1} символов.", MinimumLength = 5)]
         [DataType(DataType.Password)]
+        [StringLength(20, ErrorMessage = "Поле {0} должно иметь не менее {2} и не более {1} символов.", MinimumLength = 5)]        
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Подтвердите пароль")]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
         [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Пароли не совпадают")]        
         public string ConfirmPassword { get; set; }
     }
 }

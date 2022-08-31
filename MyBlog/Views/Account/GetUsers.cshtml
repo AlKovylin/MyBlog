@@ -13,9 +13,7 @@
         @foreach (var user in @Model.Users)
         {
             <div class="col-md-3">
-
                 <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-
                     <div class="col p-4 d-flex flex-column position-static">
                         <div class="flex-md-row mb-2 position-relative">
                             @foreach (var role in user.Roles)
@@ -29,29 +27,22 @@
                         <div class="row">
                             <strong class="d-inline-block mb-3 text-success">"@user.Email"</strong>
                         </div>
-
-                        <!--<form asp-controller="User" asp-action="Edit" asp-route-id="@user.id" method="post">
-                            <button type="submit" class="btn btn-link">
-                                Редактировать
-                            </button>
-                        </form>-->
-
                         <div>
-
-                            <!--<button href="User/Edit/@user.id" type="button" class="btn btn-outline-primary">Редактировать</button>
-
-                            <button href="Account/Delete/@user.id" type="button" class="btn btn-outline-danger">Удалить</button>-->
-                            <form asp-controller="Account" asp-action="Edit" asp-route-id="@user.id" method="post">
-                                <div class="row">
-                                    <div class="col-auto">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <form asp-controller="Account" asp-action="Edit" asp-route-id="@user.id" method="post">
                                         <button type="submit" class="btn btn-sm btn-outline-primary">Редактировать</button>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button href="Account/Delete/@user.id" class="btn btn-sm btn-outline-danger">Удалить</button>
-                                    </div>
+                                    </form>
                                 </div>
-                            </form>
-
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <div class="col-auto">
+                                        <form asp-controller="Account" asp-action="Delete" asp-route-id="@user.id" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -46,12 +46,8 @@ namespace MyBlog.Controllers
                 await Authenticate(user);
                 return RedirectToAction("Index", "Article");
             }
-            else
-            {
-                ModelState.AddModelError("", "Некорректные логин и(или) пароль");
-            }
 
-            return View();
+            return View("LoginError");
         }
 
         [HttpGet]
@@ -67,44 +63,42 @@ namespace MyBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string email, string password)//RegisterViewModel
         {
-            if (ModelState.IsValid)
+            User user = null;
+
+            user = _userRepository.GetAll().FirstOrDefault(u => u.Email == email);
+
+            if (user == null)
             {
-                User user = null;
+                // добавляем пользователя в бд
+                var newUser = new User();
 
-                user = _userRepository.GetAll().FirstOrDefault(u => u.Email == email);
+                newUser.Email = email;
+                newUser.Password = password;
+                newUser.Role.Add(_roleRepository.GetAll().FirstOrDefault(r => r.Name == DefaultRole.Role));
 
-                if (user == null)
+                _userRepository.Create(newUser);
+
+                //проверяем успешность добавления в базу
+                user = _userRepository.GetAll().Where(u => u.Email == email && u.Password == password).FirstOrDefault();
+
+                var model = _mapper.Map<UserViewModel>(user);
+
+                if (user != null)
                 {
-                    // добавляем пользователя в бд
-                    var newUser = new User();
+                    await Authenticate(user);
 
-                    newUser.Email = email;
-                    newUser.Password = password;
-                    newUser.Role.Add(_roleRepository.GetAll().FirstOrDefault(r => r.Name == DefaultRole.Role));
-
-                    _userRepository.Create(newUser);
-
-                    //проверяем успешность добавления в базу
-                    user = _userRepository.GetAll().Where(u => u.Email == email && u.Password == password).FirstOrDefault();
-
-                    var model = _mapper.Map<UserViewModel>(user);
-
-                    if (user != null)
-                    {
-                        await Authenticate(user);
-
-                        return View("UserData", model);
-                    }
-                }
-                else
-                {
-                    //Здесь добавить возврат ошибки
-                    Console.WriteLine("Пользователь с таким логином уже существует");
+                    return RedirectToAction("Edit", "User");
                 }
             }
-            return RedirectToAction("Index", "Article");
+            ViewData["checkEmail"] = email;
+
+            return View("/Views/Account/CheckUser.cshtml");
         }
 
+        /// <summary>
+        /// Выход из системы
+        /// </summary>
+        /// <returns></returns>
         [Route("Logout")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -143,9 +137,13 @@ namespace MyBlog.Controllers
             await HttpContext.SignInAsync(claimsPrincipal);//устанавливаем куки для пользователя
         }
 
-        //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА
+        /// <summary>
+        /// Получение списка всех пользователей
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetUsers")]
         [HttpGet]
-        [Authorize(Roles = "User, Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         public IActionResult GetUsers()
         {
             var model = new UsersAllViewModel();
@@ -166,13 +164,19 @@ namespace MyBlog.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Редактиование пользователя для Moderator, Admin
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Route("Edit")]
         [HttpPost]
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         public IActionResult Edit(int id)
         {
             var user = _userRepository.Get(id);
 
+            //скользкое решение, если имя или фамилия будут состоять из двух слов
             var editmodel = _mapper.Map<UserViewModel>(user);
 
             var userRoles = _userRepository.GetUserRoles(user);
@@ -186,14 +190,20 @@ namespace MyBlog.Controllers
             return View("UserData", editmodel);
         }
 
-
+        /// <summary>
+        /// Сохраняет в базу данные пользователя
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="AboutMy"></param>
+        /// <param name="RolesList"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Moderator")]
+        [Authorize(Roles = "Moderator, Admin")]
         public IActionResult Save(UserViewModel model, string AboutMy, List<string> RolesList)
         {
             var user = _userRepository.Get(model.id);
 
-            //user = _mapper.Map<User>(model);
+            //user = _mapper.Map<User>(model);//происходт ошибка записи в бд
 
             user.AboutMy = AboutMy;
 
@@ -209,7 +219,8 @@ namespace MyBlog.Controllers
 
             foreach (var role in userRoles)
             {
-                user.Role.Remove(role);
+                if (role.Name != "User")
+                    user.Role.Remove(role);
             }
 
             foreach (var role in RolesList)
@@ -224,8 +235,13 @@ namespace MyBlog.Controllers
         }
 
         //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА или админа
-        [HttpDelete]
-        [Authorize(Roles = "User, Admin")]
+        /// <summary>
+        /// Удаление пользователя
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var user = _userRepository.Get(id);

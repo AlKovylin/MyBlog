@@ -1,0 +1,55 @@
+﻿@model MyBlog.ViewModels.RoleViewModel;
+
+@{
+    ViewData["Title"] = "Редактирование роли";
+}
+
+<div class="row g-5">
+    <div class="col-md-7 col-lg-8">
+        @if (Model != null)
+        {
+            <h4 class="mb-3">Редактирование роли</h4>
+        }
+        else
+        {
+            <h4 class="mb-3">Создание роли</h4>
+        }
+        <form class="" asp-controller="Role" asp-action="Save" method="post">
+            <div>
+                <input asp-for="Id" type="hidden" />
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-5">
+                    <label for="email" class="form-label font-weight-bold">Название</label>
+                    <div class="input-group has-validation">
+                        @if (Model != null)
+                        {
+                            <input asp-for="Name" type="text" class="form-control" value="@Model.Name" disabled>
+                        }
+                        else
+                        {
+                            <input asp-for="Name" type="text" class="form-control" required>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-5">
+                    <label for="email" class="form-label font-weight-bold">Описание</label>
+                    <div class="input-group has-validation">
+                        <textarea rows="5" asp-for="Description" type="text" class="form-control" name="description"></textarea>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row mb-3">
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Сохранить</button>
+                </div>
+            </div>
+        </form>
+        <div>
+            <a href="/Role/Index/">Перейти к списку всех ролей</a>
+        </div>
+    </div>
+</div>

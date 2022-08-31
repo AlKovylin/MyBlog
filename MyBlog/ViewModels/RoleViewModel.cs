@@ -1,6 +1,6 @@
-﻿namespace MyBlog.Infrastructure.Business.Models
+﻿namespace MyBlog.ViewModels
 {
-    public class RoleModel
+    public class RoleViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -8,7 +8,7 @@ namespace MyBlog.Domain.Core
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
+        public string Description { get; set; }
         /// <summary>
         /// Навигационное свойство тегов
         /// </summary>

@@ -12,40 +12,42 @@
         <h4 class="mb-3">Редактирование данных пользователя</h4>
         <form class="" asp-controller="Account" asp-action="Save" method="post">
             <div class="row mb-3">
-                @foreach (var role in Model.AllRoles)
+                @if (User.IsInRole("Admin"))
                 {
-                    <div class="col-auto mr-2">
-                        @if (Model.Roles.Any(r => r.Id == role.Id))
-                        {
-                            @if (role.Name != "User")
+                    @foreach (var role in Model.AllRoles)
+                    {
+                        <div class="col-auto mr-2">
+                            @if (Model.Roles.Any(r => r.Id == role.Id))
                             {
-                                <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
+                                @if (role.Name != "User")
+                                {
+                                    <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
                                         onchange="clickTag(event)" value="@role.Name" checked>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
+                                        onchange="clickTag(event)" value="@role.Name" checked disabled>
+                                }
                             }
                             else
                             {
                                 <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
-                                        onchange="clickTag(event)" value="@role.Name" checked disabled>
-                                <input name="RolesList" value="@role.Name" type="hidden" />
-                            }
-                        }
-                        else
-                        {
-                            <input type="checkbox" class="form-check-input" id="@role.Name" name="RolesList" autocomplete="off"
                                     onchange="clickTag(event)" value="@role.Name">
-                        }
-                        <label class="form-check-label" for="@role.Name">@role.Name</label>
-                    </div>
+                            }
+                            <label class="form-check-label" for="@role.Name">@role.Name</label>
+                        </div>
+                    }
                 }
             </div>
             <div>
-                <input asp-for="id" type="hidden" />
+                <input asp-for="id" type="hidden"/>
             </div>
             <div class="row mb-3">
                 <div class="col-md-5">
                     <label for="FirstName" class="form-label font-weight-bold">Имя</label>
                     <div class="input-group has-validation">
-                        <input asp-for="FirstName" type="text" class="form-control" id="FirstName" placeholder="Ваше имя" value="@Model.FirstName" required="">
+                        <input asp-for="FirstName" type="text" class="form-control" id="FirstName" placeholder="Ваше имя" value="@Model.FirstName" required>
                         <span class="text-danger"></span>
                     </div>
                 </div>
@@ -54,7 +56,7 @@
                 <div class="col-md-5">
                     <label for="LastName" class="form-label font-weight-bold">Фамилия</label>
                     <div class="input-group has-validation">
-                        <input asp-for="LastName" type="text" class="form-control" id="LastName" placeholder="Ваша фамилия" value="@Model.LastName" required="">
+                        <input asp-for="LastName" type="text" class="form-control" id="LastName" placeholder="Ваша фамилия" value="@Model.LastName" required>
                         <span class="text-danger"></span>
                     </div>
                 </div>
@@ -63,7 +65,7 @@
                 <div class="col-md-5">
                     <label for="email" class="form-label font-weight-bold">Эл. адрес<span class="text-muted font-weight-normal"> (для входа в систему)</span></label>
                     <div class="input-group has-validation">
-                        <input asp-for="Email" type="text" class="form-control" id="email" placeholder="exampl@yandex.ru" value="@Model.Email" required="">
+                        <input asp-for="Email" type="text" class="form-control" id="email" placeholder="exampl@yandex.ru" value="@Model.Email" required>
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
                 </div>
@@ -72,7 +74,7 @@
                 <div class="col-md-5">
                     <label for="email" class="form-label font-weight-bold">Название вашего блога</label>
                     <div class="input-group has-validation">
-                        <input asp-for="DisplayName" type="text" class="form-control" id="displayName" placeholder="пример: Компьютерный ботаник" value="@Model.DisplayName" required="">
+                        <input asp-for="DisplayName" type="text" class="form-control" id="displayName" placeholder="пример: Компьютерный ботаник" value="@Model.DisplayName" required>
                         <span asp-validation-for="DisplayName" class="text-danger"></span>
                     </div>
                 </div>
@@ -81,7 +83,7 @@
                 <div class="col-md-5">
                     <label for="email" class="form-label font-weight-bold">О себе<span class="text-muted font-weight-normal"> (расскажите о себе или о своём блоге)</span></label>
                     <div class="input-group has-validation">
-                        <textarea asp-for="AboutMy" type="text" class="form-control" name="AboutMy" id="AboutMy" placeholder="exampl@yandex.ru" required=""></textarea>
+                        <textarea asp-for="AboutMy" type="text" class="form-control" name="AboutMy" id="AboutMy"></textarea>
                     </div>
                 </div>
             </div>

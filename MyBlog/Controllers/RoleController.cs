@@ -69,6 +69,16 @@ namespace MyBlog.Controllers
             _roleRepository.Update(role);
 
             return RedirectToAction("Index");
-        }       
+        }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var role = _roleRepository.GetAll().FirstOrDefault(r => r.Id == id);
+
+            _roleRepository.Delete(role);
+
+            return RedirectToAction("Index");
+        }
     }
 }

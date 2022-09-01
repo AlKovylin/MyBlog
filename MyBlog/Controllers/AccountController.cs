@@ -13,6 +13,7 @@ using MyBlog.ViewModels;
 using AutoMapper;
 using MyBlog.Infrastructure.Business.Models;
 
+
 namespace MyBlog.Controllers
 {
     public class AccountController : Controller
@@ -55,44 +56,36 @@ namespace MyBlog.Controllers
 
 
         /// <summary>
-        /// Принимает данные из представления и обеспечивает регистрацию в системе
+        /// Регистрация пользователя
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string email, string password)//RegisterViewModel
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            User user = null;
-
-            user = _userRepository.GetAll().FirstOrDefault(u => u.Email == email);
-
-            if (user == null)
+            var check = _userRepository.GetAll().Any(u => u.Email == model.Email);
+            
+            if (ModelState.IsValid)
             {
-                // добавляем пользователя в бд
-                var newUser = new User();
-
-                newUser.Email = email;
-                newUser.Password = password;
-                newUser.Role.Add(_roleRepository.GetAll().FirstOrDefault(r => r.Name == DefaultRole.Role));
-
-                _userRepository.Create(newUser);
-
-                //проверяем успешность добавления в базу
-                user = _userRepository.GetAll().Where(u => u.Email == email && u.Password == password).FirstOrDefault();
-
-                var model = _mapper.Map<UserViewModel>(user);
-
-                if (user != null)
+                if (check)
                 {
-                    await Authenticate(user);
+                    ViewData["checkEmail"] = model.Email;
 
-                    return RedirectToAction("Edit", "User");
+                    return View("/Views/Account/CheckUser.cshtml");
                 }
-            }
-            ViewData["checkEmail"] = email;
 
-            return View("/Views/Account/CheckUser.cshtml");
+                var user = _mapper.Map<User>(model);
+
+                user.Role.Add(_roleRepository.GetAll().FirstOrDefault(r => r.Name == DefaultRole.Role));
+
+                _userRepository.Create(user);
+
+                await Authenticate(user);
+
+                return RedirectToAction("Edit", "User");
+            }
+            return RedirectToAction("Register", model);            
         }
 
         /// <summary>
@@ -234,7 +227,6 @@ namespace MyBlog.Controllers
             return RedirectToAction("GetUsers", "Account");
         }
 
-        //ОСТАВИТЬ ТОЛЬКО МОДЕРАТОРА или админа
         /// <summary>
         /// Удаление пользователя
         /// </summary>

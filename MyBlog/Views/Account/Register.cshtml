@@ -1,7 +1,7 @@
 ﻿@model MyBlog.ViewModels.RegisterViewModel;
 
 @{
-    ViewData["Title"] = "Регистрация нового пользователя";
+    ViewData["Title"] = "Регистрация";
 }
 
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
@@ -15,29 +15,27 @@
             <div class="row">
                 <div class="col-md-5">
                     <label for="email" class="form-label">Эл. адрес<span class="text-muted"> (для входа в систему)</span></label>
-                    <div class="input-group has-validation">
-                        <input asp-for="Email" type="text" class="form-control" id="email" placeholder="exampl@yandex.ru" required="">
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                        <div class="invalid-feedback">
-                            Имя пользователя обязательно.
-                        </div>
+                    <input asp-for="Email" type="text" class="form-control" id="email" placeholder="exampl@yandex.ru" required="">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <div class="invalid-feedback">
+                        Имя пользователя обязательно.
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-5">
                     <label for="pass1" class="form-label">Пароль</label>
-                    <input asp-for="Password" type="text" class="form-control" id="pass1" placeholder="*********" required="">
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <input asp-for="RegPassword" class="form-control" id="pass1" placeholder="*********" required="">
+                    <span asp-validation-for="RegPassword" class="text-danger"></span>
                     <div class="invalid-feedback">
-                            Пожалуйста, введите пароль.
+                        Пожалуйста, введите пароль.
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-5">
                     <label for="pass2" class="form-label">Пароль повторно</label>
-                    <input asp-for="ConfirmPassword" type="text" class="form-control" id="pass2" placeholder="*********" required="">
+                    <input asp-for="ConfirmPassword" class="form-control" id="pass2" placeholder="*********" required="">
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     <div class="invalid-feedback">
                         Пожалуйста, введите пароль повторно.

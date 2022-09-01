@@ -19,7 +19,9 @@ namespace MyBlog
             //скользкое решение, если имя или фамилия будут состоять из двух слов
             CreateMap<User, UserViewModel>()
                 .ForMember(u => u.FirstName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).First()))
-                .ForMember(u => u.LastName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).Last()));            
+                .ForMember(u => u.LastName, opt => opt.MapFrom(src => src.Name.Split(new char[] { ' ' }).Last()));
+
+            CreateMap<RegisterViewModel, User>();
 
             CreateMap<ArticleModel, Article>();
             CreateMap<Article, ArticleModel>();

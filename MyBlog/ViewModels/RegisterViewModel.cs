@@ -11,11 +11,11 @@ namespace MyBlog.ViewModels
         [Required(ErrorMessage = "Введите пароль")]
         [DataType(DataType.Password)]
         [StringLength(20, ErrorMessage = "Поле {0} должно иметь не менее {2} и не более {1} символов.", MinimumLength = 5)]        
-        public string Password { get; set; }
+        public string RegPassword { get; set; }
 
         [Required(ErrorMessage = "Подтвердите пароль")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]        
+        [Compare("RegPassword", ErrorMessage = "Пароли не совпадают")]
         public string ConfirmPassword { get; set; }
     }
 }

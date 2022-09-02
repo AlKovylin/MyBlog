@@ -50,6 +50,7 @@ namespace MyBlog.Controllers
         [HttpPost]
         public IActionResult Save(RoleViewModel model, string description)
         {
+            //добавить проверку имени роли
             var role = _roleRepository.Get(model.Id);
 
             if (role == null)

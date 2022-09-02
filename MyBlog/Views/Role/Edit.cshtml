@@ -15,30 +15,33 @@
             <h4 class="mb-3">Создание роли</h4>
         }
         <form class="" asp-controller="Role" asp-action="Save" method="post">
+            <div asp-validation-summary="ModelOnly"></div>
             <div>
                 <input asp-for="Id" type="hidden" />
             </div>
             <div class="row mb-3">
                 <div class="col-md-5">
-                    <label for="email" class="form-label font-weight-bold">Название</label>
-                    <div class="input-group has-validation">
+                    <label for="name" class="form-label font-weight-bold">Название</label>
+
                         @if (Model != null)
                         {
-                            <input asp-for="Name" type="text" class="form-control" value="@Model.Name" disabled>
+                            <input asp-for="Name" type="text" class="form-control" id="name" value="@Model.Name" disabled>                            
                         }
                         else
                         {
                             <input asp-for="Name" type="text" class="form-control" required>
                         }
-                    </div>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-5">
-                    <label for="email" class="form-label font-weight-bold">Описание</label>
-                    <div class="input-group has-validation">
-                        <textarea rows="5" asp-for="Description" type="text" class="form-control" name="description"></textarea>
-                    </div>
+                    <label for="description" class="form-label font-weight-bold">Описание</label>
+                    
+                        <textarea rows="5" asp-for="Description" type="text" class="form-control" id="description" name="description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    
                 </div>
             </div>
             <hr class="my-4">
@@ -53,3 +56,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -8,21 +8,22 @@
     <h3 class="display-4 fst-italic py-3">Редактирование статьи</h3>
 </div>
 <div class="row">
-    <script src="~/js/ckeditor/ckeditor.js"></script>
+    <script src="~/js/ckeditor4/ckeditor.js"></script>
 
-    <form asp-controller="Article" asp-action="Save" method="post">
+    <!--<form asp-controller="Article" asp-action="Save" method="post">-->
+    <form id="editArticleForm">
         <div class="row">
             @foreach (var tag in Model.TagsAll)
             {
                 <div class="col-auto mr-2">
                     @if (Model.TagsArticle.Any(t => t.Id == tag.Id))
                     {
-                        <input type="checkbox" class="form-check-input" id="@tag.Name" name="TagsList" autocomplete="off"
+                        <input type="checkbox" class="form-check-input" name="TagsList" autocomplete="off"
                        onchange="clickTag(event)" value="@tag.Name" checked>
                     }
                     else
                     {
-                        <input type="checkbox" class="form-check-input" id="@tag.Name" name="TagsList" autocomplete="off"
+                        <input type="checkbox" class="form-check-input" name="TagsList" autocomplete="off"
                        onchange="clickTag(event)" value="@tag.Name">
                     }
                     <label class="form-check-label" for="@tag.Name">@tag.Name</label>
@@ -43,61 +44,49 @@
             </div>
             <br />
             <div>
-                <textarea asp-for="Article.Content" name="content">@Model.Article.Content</textarea>
+                <textarea asp-for="Article.Content" id="content"></textarea>
             </div>
             <br />
             <div>
-                <input class="btn btn-sm btn-outline-primary" type="submit" value="Сохранить" onclick="updateTags" />
+                <!--<input class="btn btn-sm btn-outline-primary" type="submit" value="Сохранить" onclick="updateTags" />-->
+                <button type="button" onclick="SaveArticle()" class="btn btn-sm btn-outline-primary">Сохранить</button>
             </div>
         </div>
     </form>
     @if (User.IsInRole("Moderator"))
     {
-        <div class="col-5">
-            <div class="mb-3">
-                <h5>Комментарии к статье</h5>
-            </div>
-            <hr class="my-2">
-            @if (@Model.Comments.Count > 0)
-            {
-                @foreach (var comment in @Model.Comments)
-                {
-                    <div class="position-relative">
-                        <p class="d-inline-block font-weight-bold">Автор</p>
-                        <p class="d-inline-block float-end text-primary">@comment.Created.ToLongDateString()</p>
-                    </div>
-                    <div class="mb-3">
-                        <p class="card-text">@comment.Content</p>
-                    </div>
-                    <div class="row">
-                        <div class="col-auto">
-                            <form asp-controller="Comment" asp-action="Edit" method="post">
-                                <input asp-for="@comment.Id" name="id" type="hidden"/>
-                                <input asp-for="@Model.Article.Id" name="articleId" type="hidden"/>  
-                                <button type="submit" class="btn btn-sm btn-outline-primary">Редактировать</button>
-                            </form>
-                        </div>
-                        <div class="col-auto">
-                            <form asp-controller="Comment" asp-action="Delete" asp-route-id="@comment.Id" method="post">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                            </form>
-                        </div>
-                    </div>
-                    <hr class="my-2">
-                }
-            }
-            else
-            {
-                <div>
-                    <p>Пока здесь нет комментариев. Стань первым!</p>
+        <div class="row">
+            <div class="col-5">
+                <div class="mb-3">
+                    <h5>Комментарии к статье</h5>
                 </div>
-            }
+                <hr class="my-2">
+                <div id="partial">
+                    <partial name="/Views/Comment/_CommentsPartial.cshtml" model="@Model.Comments" />
+                </div>
+            </div>
+            <div class="col-4 ml-5">
+                <div class="mb-3">
+                    <h5>Редактирование комментария</h5>
+                </div>
+                <form id="commentForm">
+                    <input asp-for="Article.Id" name="articleId" id="articleId" type="hidden" />
+                    <input id="CommentId" name="commentId" type="hidden" />
+                    <div>
+                        <textarea cols="65" rows="2" class="form-control mb-3" id="CommentText" placeholder="Текст комментария" name="commentContent"></textarea>
+                    </div>
+                    <div>
+                        <button type="button" onclick="UpdateComment('Edit')" class="btn btn-sm btn-outline-primary mb-3">Сохранить</button>
+                    </div>
+                </form>
+            </div>
         </div>
     }
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function(event) {
-        var editor = CKEDITOR.replace('content');
-    });
-</script>
+@section Scripts{
+    <script>
+        
+    </script>
+}
+

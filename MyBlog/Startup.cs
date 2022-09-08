@@ -73,6 +73,7 @@ namespace MyBlog
             }
             else
             {
+                //app.UseExceptionHandler
                 app.UseHsts();                
             }
 

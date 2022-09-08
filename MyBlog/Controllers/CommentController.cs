@@ -45,47 +45,68 @@ namespace MyBlog.Controllers
             };
 
             _commentRepository.Create(newComment);
-
+           
             //return RedirectToAction("Read", "Article", new { id = articleId});//ошибка 405
             return RedirectToAction("Index", "Article");
         }
 
         [Authorize(Roles = "Moderator")]
         [HttpPost]
-        public IActionResult Edit(int id, int articleId)
+        public JsonResult Update(int commentId, string commentContent)
         {
-            var comment = _commentRepository.Get(id);
+            var comment = _commentRepository.Get(commentId);
 
-            var model = _mapper.Map<CommentViewModel>(comment);
+            comment.Content = commentContent;
 
-            model.ArticleId = articleId;
-
-            return View(model);
-        }
-
-        [Authorize(Roles = "Moderator")]
-        [HttpPost]
-        public IActionResult Update(CommentViewModel model)
-        {
-            var comment = _commentRepository.Get(model.Id);
-
-            comment.Content = model.Content;
-
-            _commentRepository.Update(comment);
+            _commentRepository.Update(comment);            
 
             //return RedirectToAction("Edit", "Article", model.ArticleId);//ошибка 405
-            return RedirectToAction("", "Article");
+            //return RedirectToAction("", "Article");
+            return Json("successfully");
         }
 
         [Authorize(Roles = "Moderator")]
         [HttpPost]
-        public IActionResult Delete(int Id)
+        public JsonResult Delete(int commentId)
         {
-            var comment = _commentRepository.GetAll().FirstOrDefault(c => c.Id == Id);
+            var comment = _commentRepository.GetAll().FirstOrDefault(c => c.Id == commentId);
 
             _commentRepository.Delete(comment);
 
-            return RedirectToAction("Index", "Article");
+            return Json("successfully");
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost]
+        public JsonResult Save(int articleId, string comment)
+        {
+            var article = _articleRepository.Get(articleId);
+
+            var user = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
+
+            var newComment = new Comment()
+            {
+                Content = comment,
+                User = user,
+                Article = article
+            };
+
+            _commentRepository.Create(newComment);
+
+            return Json("successfully");
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost]
+        public IActionResult GetAll(int articleId, string status)
+        {
+            var comments = _commentRepository.GetAll().Where(c => c.ArticleId == articleId).OrderByDescending(c => c.Created).ToList();
+
+            var model = _mapper.Map<List<CommentModel>>(comments);
+
+            ViewBag.ReadEdit = status;
+
+            return PartialView("_CommentsPartial", model);
         }
     }
 }

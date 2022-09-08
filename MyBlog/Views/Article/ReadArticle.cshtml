@@ -7,7 +7,7 @@
     </div>
     <div class="flex-md-row">
         <div class="col">
-            @foreach (var tag in @Model.Tags)
+            @foreach (var tag in @Model.TagsArticle)
             {
                 <p class="d-inline-block text-primary mr-2">@tag.Name</p>
             }
@@ -21,23 +21,22 @@
             </div>
             <div class="mb-3 text-muted">@Model.Article.Published.ToLongDateString()</div>
             <div>@Html.Raw(@Model.Article.Content)</div>
+            <input asp-for="Article.Id" name="articleId" id="articleId" type="hidden" />
         </div>
     </div>
     <div class="col-5">
         <div class="mb-3">
             <h5>Комментарии к статье</h5>
         </div>
-        <form asp-controller="Comment" asp-action="Create" method="post">
+        <form id="commentForm">
+            <input asp-for="Article.Id" name="articleId" id="articleId" type="hidden" />
             <div>
-                <textarea cols="65" rows="2" placeholder="Ваш комментарий" name="comment"></textarea>
-            </div>
-            <div>
-                <input asp-for="Article.Id" name="articleId" type="hidden" />
+                <textarea cols="65" rows="2" class="form-control mb-3" id="CommentText" placeholder="Ваш комментарий" name="comment"></textarea>
             </div>
             <div>
                 @if (User.IsInRole("User"))
                 {
-                    <button type="submit" class="btn btn-sm btn-outline-primary mb-3">Оставить комментарий</button>
+                    <button type="button" onclick="SaveComment()" class="btn btn-sm btn-outline-primary mb-3">Оставить комментарий</button>
                 }
                 else
                 {
@@ -47,27 +46,9 @@
             </div>
         </form>
         <hr class="my-2">
-        @if (@Model.Comments.Count > 0)
-        {
-            @foreach (var comment in @Model.Comments)
-            {
-
-                <div class="position-relative">
-                    <p class="d-inline-block font-weight-bold">@comment.User.Name</p>
-                    <p class="d-inline-block float-end text-primary">@comment.Created.ToLongDateString()</p>
-                </div>
-                <div>
-                    <p class="card-text">@comment.Content</p>
-                </div>
-                <hr class="my-2">
-            }
-        }
-        else
-        {
-            <div>
-                <p>Пока здесь нет комментариев. Стань первым!</p>
-            </div>
-        }
+        <div id="partial">
+            <partial name="/Views/Comment/_CommentsPartial.cshtml" model="@Model.Comments" />
+        </div>
     </div>
 }
 else

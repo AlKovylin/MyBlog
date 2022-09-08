@@ -5,13 +5,13 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using MyBlog.Domain.Core;
 using System.Linq;
-using System;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using MyBlog.ViewModels;
 using AutoMapper;
 using MyBlog.Infrastructure.Business.Models;
+using Microsoft.Extensions.Logging;
 
 
 namespace MyBlog.Controllers
@@ -21,12 +21,14 @@ namespace MyBlog.Controllers
         private IUserRepository _userRepository;
         private IRepository<Role> _roleRepository;
         private IMapper _mapper;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IUserRepository userRepository, IRepository<Role> roleRepository, IMapper mapper)
+        public AccountController(IUserRepository userRepository, IRepository<Role> roleRepository, IMapper mapper, ILogger<AccountController> logger)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -128,6 +130,13 @@ namespace MyBlog.Controllers
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
             await HttpContext.SignInAsync(claimsPrincipal);//устанавливаем куки для пользователя
+
+            _logger.LogInformation($"Login completed: {user.Name}, {user.Email}");
+
+            foreach(var role in userRoles)
+            {
+                _logger.LogInformation($"User role: {role.Name}");
+            }
         }
 
         /// <summary>

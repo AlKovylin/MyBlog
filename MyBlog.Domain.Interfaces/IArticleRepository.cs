@@ -8,5 +8,6 @@ namespace MyBlog.Domain.Interfaces
     public interface IArticleRepository : IRepository<Article>
     {
         List<Tag> GetArticleTags(Article article);
+        int GetNumArticlesByTag(Tag tag);
     }    
 }

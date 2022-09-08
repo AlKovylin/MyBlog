@@ -7,7 +7,7 @@ namespace MyBlog.ViewModels
     {
         public ArticleModel Article { get; set; }
         public UserModel Author { get; set; }
-        public List<CommentModel> Comments = new List<CommentModel>();
-        public List<TagModel> Tags = new List<TagModel>();
+        public List<CommentModel> Comments = new List<CommentModel>();        
+        public List<TagModel> TagsArticle = new List<TagModel>();
     }
 }

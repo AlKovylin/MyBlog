@@ -1,0 +1,65 @@
+﻿@model MyBlog.ViewModels.TagViewModel;
+
+@{
+    ViewData["Title"] = "Тэги";
+}
+
+<div class="row g-5">
+    <div class="col-md-7 col-lg-8">
+        @if (Model.Id > 0)
+        {
+            <h4 class="mb-3">Редактирование тега</h4>
+            <form class="" asp-controller="Tag" asp-action="UpdateDelete" method="post">
+                <div asp-validation-summary="ModelOnly"></div>
+                <div>
+                    <input asp-for="Id" type="hidden" />
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-5">
+                        <label for="name" class="form-label font-weight-bold">Название</label>
+                        <input asp-for="Name" type="text" class="form-control" id="name" value="@Model.Name" required>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <hr class="my-4 w-50">
+                <div class="row mb-3">
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-sm btn-outline-primary" name="action" value="update">Сохранить</button>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" name="action" value="delete">Удалить</button>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <h4 class="mb-3">Создание тега</h4>
+            <form class="" asp-controller="Tag" asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly"></div>
+                <div class="row mb-3">
+                    <div class="col-md-5">
+                        <label for="name" class="form-label font-weight-bold">Название</label>
+                        <input asp-for="Name" type="text" class="form-control" id="name" required>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <hr class="my-4 w-50">
+                <div class="row mb-3">
+                    <div class="col-auto">
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Сохранить</button>
+                    </div>
+                </div>
+            </form>
+        }
+        <div>
+            <a href="/Tag/Index/">Перейти к списку всех тегов</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

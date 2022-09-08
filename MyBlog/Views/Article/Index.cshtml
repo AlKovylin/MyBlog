@@ -12,10 +12,17 @@
         @foreach (var article in @Model.AllArticles)
         {
             <div class="col-md-6">
-                <div class="flex-md-row mb-2 position-relative">
-                    @foreach (var tag in article.Tags)
+                <div class="row mb-2  ">
+                    @foreach (var tag in article.TagsArticle)
                     {
-                        <button type="button" class="btn btn-outline-primary btn-sm">@tag.Name</button>
+                        <div class="col-auto gx-4">
+                            <button type="button" class="btn btn-outline-primary position-relative btn-sm">
+                                @tag.Name
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                                    @Model.AllTags.FirstOrDefault(t => t.Name == tag.Name).NumArticlesByTag
+                                </span>
+                            </button>
+                        </div>
                     }
                 </div>
                 <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">

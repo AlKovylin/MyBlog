@@ -43,45 +43,50 @@ namespace MyBlog.Controllers
 
             var articles = _articleRepository.GetAll().OrderByDescending(a => a.Published).ToList();
 
-            if (articles != null)
+            //получаем все теги
+            var allTags = _tagRepository.GetAll();
+            //мапим в список TagModels
+            var allTagsModel = _mapper.Map<List<TagModel>>(allTags);
+            //заполняем поле содержащее количество статей по тегу
+            foreach (var tag in allTagsModel)
             {
+                tag.NumArticlesByTag = _articleRepository.GetNumArticlesByTag(allTags.FirstOrDefault(t => t.Id == tag.Id));
+            }
+            //записываем в модель
+            allArticles.AllTags = allTagsModel;
 
-                foreach (var article in articles)
+            //формируем данные для отдельных статей
+            foreach (var article in articles)
+            {
+                var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
+
+                var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
+
+                var commentsModelList = new List<CommentModel>();
+
+                foreach (var comment in comments)
                 {
-                    var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
+                    var _user = _userRepository.GetAll().FirstOrDefault(u => u.Id == comment.UserId);
 
-                    var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
+                    var _comment = _mapper.Map<CommentModel>(comment);
 
-                    var commentsModelList = new List<CommentModel>();
+                    _comment.User = _mapper.Map<UserModel>(_user);
 
-                    foreach (var comment in comments)
-                    {
-                        var _user = _userRepository.GetAll().FirstOrDefault(u => u.Id == comment.UserId);
-
-                        var _comment = _mapper.Map<CommentModel>(comment);
-
-                        _comment.User = _mapper.Map<UserModel>(_user);
-
-                        commentsModelList.Add(_comment);
-                    }
-
-                    var tags = _articleRepository.GetArticleTags(article);
-
-                    allArticles.AllArticles.Add(new ArticleViewModel
-                    {
-                        Article = _mapper.Map<ArticleModel>(article),
-                        Author = _mapper.Map<UserModel>(user),
-                        Comments = commentsModelList,
-                        Tags = _mapper.Map<List<TagModel>>(tags)
-                    });
+                    commentsModelList.Add(_comment);
                 }
 
-                return View("Index", allArticles);
+                var tags = _articleRepository.GetArticleTags(article);
+
+                allArticles.AllArticles.Add(new ArticleViewModel
+                {
+                    Article = _mapper.Map<ArticleModel>(article),
+                    Author = _mapper.Map<UserModel>(user),
+                    Comments = commentsModelList,
+                    TagsArticle = _mapper.Map<List<TagModel>>(tags)
+                });
             }
-            else
-            {
-                return View("Articles", "Пока здесь нет ни одной статьи.");
-            }
+
+            return View("Index", allArticles);
         }
 
         /// <summary>
@@ -97,7 +102,7 @@ namespace MyBlog.Controllers
 
             var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
 
-            var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
+            var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
 
             var tags = _articleRepository.GetArticleTags(article);
 
@@ -106,11 +111,13 @@ namespace MyBlog.Controllers
                 Article = _mapper.Map<ArticleModel>(article),
                 Author = _mapper.Map<UserModel>(user),
                 Comments = _mapper.Map<List<CommentModel>>(comments),
-                Tags = _mapper.Map<List<TagModel>>(tags)
+                TagsArticle = _mapper.Map<List<TagModel>>(tags)
             };
 
+            ViewBag.ReadEdit = "Read";
+
             return View("ReadArticle", model);
-        }        
+        }
 
         /// <summary>
         /// Получение конкретной статьи для редактирования
@@ -141,6 +148,8 @@ namespace MyBlog.Controllers
                 editArticle.Comments = _mapper.Map<List<CommentModel>>(comments);
             }
 
+            ViewBag.ReadEdit = "Edit";
+
             return View("Editor", editArticle);
         }
 
@@ -150,8 +159,9 @@ namespace MyBlog.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        //[ValidateInput(false)]
         [Authorize(Roles = "User")]
-        public IActionResult Save(ArticleEditViewModel model, string content, List<string> TagsList)
+        public JsonResult Save(ArticleEditViewModel model, List<string> TagsList)
         {
             if (model.Article.Id > 0)
             {
@@ -159,7 +169,7 @@ namespace MyBlog.Controllers
 
                 article.Title = model.Article.Title;
 
-                article.Content = content;
+                article.Content = model.Article.Content;
 
                 var articleTags = _articleRepository.GetArticleTags(article);
 
@@ -182,7 +192,7 @@ namespace MyBlog.Controllers
             {
                 var newArticle = _mapper.Map<Article>(model.Article);
 
-                newArticle.Content = content;
+                newArticle.Content = model.Article.Content;
 
                 newArticle.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
 
@@ -196,13 +206,8 @@ namespace MyBlog.Controllers
 
                 _articleRepository.Create(newArticle);
             }
-            return RedirectToAction("MyPage", "User");
-
-            //не удаётся сохранить статью и остаться на странице путём её перезагрузки
-            //return RedirectToAction("Edit", "Article", new { id = article.Id });
-            //return View("Editor", article.Id);
-            //return RedirectToAction("Index", "Article");
-            //return RedirectToActionPermanent("Edit", new { id = article.Id });
+            //return RedirectToAction("MyPage", "User");
+            return Json("successfully");
         }
 
 

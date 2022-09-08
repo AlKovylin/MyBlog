@@ -4,37 +4,49 @@
     ViewData["Title"] = "Тэги";
 }
 
-<div class="text-center">
+<div class="text-center mb-5">
     <h1 class="display-4 fst-italic py-2">Управление тегами</h1>
 </div>
-<div class="container">
+<h4 class="mb-3">Выберите тег для редактирования</h4>
+<hr class="my-3">
+<div class="row mb-3">
+    @foreach (var tag in Model.Tags)
+    {
+        <div class="col-auto">
+            <div class="flex-md-row mb-2 position-relative">
+                <form asp-controller="Tag" asp-action="Edit" asp-route-id="@tag.Id" method="post">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">@tag.Name</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+<hr class="my-3">
+<form asp-controller="Tag" asp-action="Edit" asp-route-id="0" method="post">
+    <button type="submit" class="btn btn-outline-primary btn-sm">Добавить</button>
+</form>
+
+
+
+
+
+<!--<div class="container">
     <h4>Добавить новый тег</h4>
     <form class="form-inline" asp-controller="Tag" asp-action="Create" method="post">
         <div class="form-group mb-4">
             <div class="form-floating mb-3 row">
                 <div class="col-auto">
-                    <input type="text" class="" name="name" id="floatingInput" placeholder="#name">
+                    <input type="text" class="" name="name" id="Input" placeholder="#name">
+                    <
                 </div>
                 <div class="col-auto">
                     <button type="submit" class="btn btn-outline-primary btn-sm">Добавить</button>
                 </div>
-                <hr class="my-3">
             </div>
-        </div>        
+        </div>
     </form>
 </div>
+<hr class="my-3">
 <div class="container">
-    @foreach (var tag in Model.Tags)
-    {
-        <form asp-controller="Tag" asp-action="Delete" asp-route-id="@tag.Id" method="post">
-            <div class="row">
-                <div class="col-sm-1">
-                    <strong class="d-inline-block mb-3 text-primary">@tag.Name</strong>
-                </div>
-                <div class="col-sm-1">
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Удалить</button>
-                </div>
-            </div>
-        </form>
-    }
-</div>
+
+</div>-->

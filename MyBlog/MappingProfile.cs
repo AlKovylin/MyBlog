@@ -38,6 +38,7 @@ namespace MyBlog
             CreateMap<Tag, TagModel>();
 
             CreateMap<TagsViewModel, Tag>();
+            CreateMap<Tag, TagViewModel>();
 
             CreateMap<Role, RoleModel>();
             CreateMap<Role, RoleViewModel>();

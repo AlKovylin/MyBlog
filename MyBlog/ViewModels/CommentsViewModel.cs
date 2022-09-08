@@ -5,6 +5,6 @@ namespace MyBlog.ViewModels
 {
     public class CommentsViewModel
     {
-        List<CommentModel> Comments = new List<CommentModel>();
+        public List<CommentModel> Comments = new List<CommentModel>();
     }
 }

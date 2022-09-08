@@ -17,5 +17,10 @@ namespace MyBlog.Infrastructure.Data.Repository
         {
             return _db.Tags.Include(r => r.Articles).Where(r => r.Articles.Contains(article)).ToList();
         }
+
+        public int GetNumArticlesByTag(Tag tag)
+        {
+            return _db.Articles.Include(r => r.Tags).Where(r => r.Tags.Contains(tag)).Count();
+        }
     }
 }

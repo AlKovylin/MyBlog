@@ -43,11 +43,35 @@ namespace MyBlog.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(string id)
+        public IActionResult Edit(int id)
         {
-            var tag = _tagRepository.GetAll().FirstOrDefault(t => t.Id == int.Parse(id));
+            var model = new TagViewModel();
 
-            _tagRepository.Delete(tag);
+            if (id > 0)
+            {
+                var tag = _tagRepository.Get(id);
+
+                model = _mapper.Map<TagViewModel>(tag);
+            }
+
+            return View("Edit", model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateDelete(TagViewModel model, string action)
+        {
+            var tag = _tagRepository.Get(model.Id);
+
+            if (action == "update")
+            {                
+                tag.Name = model.Name;
+
+                _tagRepository.Update(tag);
+            }
+            else if (action == "delete")
+            {
+                _tagRepository.Delete(tag);
+            }
 
             return RedirectToAction("Index");
         }

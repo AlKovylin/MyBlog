@@ -1,46 +1,53 @@
 ﻿using AutoMapper;
+using MiBlog.Api.Contracts.Models.Articles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
+using MyBlog.Infrastructure.Business.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyBlog.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]    
+    [Route("[controller]")]
     public class ArticleController : ControllerBase
     {
         private readonly IArticleRepository _articleRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IRepository<Comment> _commentRepository;
-        private readonly IRepository<Tag> _tagRepository;
+        private readonly IUserRepository _userRepository;//не используется в коде, но добавляет автора статьи 
+        private readonly IRepository<Comment> _commentRepository;//не используется в коде, но добавляет комментарии к статье
+        //с IRepository<Tag> это не работает, видимо это связано со связью многие ко многим
         private readonly IMapper _mapper;
 
         public ArticleController(IArticleRepository articleRepository,
-                                 IRepository<Comment> commentRepository,
-                                 IRepository<Tag> tagRepository,
                                  IUserRepository userRepository,
+                                 IRepository<Comment> commentRepository,
                                  IMapper mapper)
         {
             _articleRepository = articleRepository;
             _userRepository = userRepository;
             _commentRepository = commentRepository;
-            _tagRepository = tagRepository;
             _mapper = mapper;
         }
 
+        [Route("GetAll")]
         [HttpGet]
         public IActionResult GetAll()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                var articles = _articleRepository.GetAll();
+            var articles = _articleRepository.GetAll().OrderByDescending(a => a.Published);
 
-                return StatusCode(200, articles);
+            var response = new ArticlesResponse();
+
+            foreach (var article in articles)
+            {
+                article.Tags = _articleRepository.GetArticleTags(article);
+
+                response.Articles.Add(CreateModel(article));
             }
-            return StatusCode(403, new { message = "Недостаточно прав для доступа к ресурсу!" });
+
+            return StatusCode(200, response.Articles.ToArray());
         }
 
         /// <summary>
@@ -48,29 +55,76 @@ namespace MyBlog.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Route("GetArticle")]
-        [HttpPost]
+        [Route("Get")]
+        [HttpGet]
         public IActionResult Get(int id)
         {
-            var article = _articleRepository.GetAll().FirstOrDefault(a => a.Id == id);
+            var article = _articleRepository.Get(id);
 
-            var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
+            if (article is null)
+                return StatusCode(400, new { message = $"Сатья с ID: {id} не найдена." });
 
-            var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
+            article.Tags = _articleRepository.GetArticleTags(article);
 
-            var tags = _articleRepository.GetArticleTags(article);
+            var response = CreateModel(article);
 
-            var model = new ArticleViewModel()
+            return StatusCode(200, response);
+        }
+
+        private ArticleResponse CreateModel(Article article)
+        {
+            return new ArticleResponse()
             {
                 Article = _mapper.Map<ArticleModel>(article),
-                Author = _mapper.Map<UserModel>(user),
-                Comments = _mapper.Map<List<CommentModel>>(comments),
-                TagsArticle = _mapper.Map<List<TagModel>>(tags)
+                Author = _mapper.Map<UserModel>(article.User),
+                Comments = _mapper.Map<Comment[], CommentModel[]>(article.Comment.ToArray()),
+                TagsArticle = _mapper.Map<Tag[], TagModel[]>(article.Tags.ToArray())
             };
+        }
 
-            ViewBag.ReadEdit = "Read";
+        [Route("Update")]
+        [HttpPut]
+        public IActionResult Update(ArticleRequest request)
+        {
+            try
+            {
+                var article = _articleRepository.Get(request.Article.Id);
 
-            return View("ReadArticle", model);
+                article.Title = request.Article.Title;
+                article.Content = request.Article.Content;
+
+                article.Tags.Clear();
+                article.Tags = _mapper.Map<List<Tag>>(request.TagsArticle);
+
+                _articleRepository.Update(article);
+
+                return StatusCode(200, "Обновление прошло успешно.");
+            }
+            catch
+            {
+                return StatusCode(500, "Что-то пошло не так.");
+            }
+        }
+
+        [Route("Delete")]
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var article = _articleRepository.Get(id);
+
+                if (article is null)
+                    return StatusCode(400, new { message = $"Сатья с ID: {id} не найдена." });
+
+                _articleRepository.Delete(article);
+
+                return StatusCode(200, "Удаление прошло успешно.");
+            }
+            catch
+            {
+                return StatusCode(500, "Что-то пошло не так.");
+            }
         }
     }
 }

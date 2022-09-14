@@ -8,8 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MyBlog.Controllers
-{
-    [Authorize]
+{    
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
@@ -57,7 +56,7 @@ namespace MyBlog.Controllers
         }
         
         /// <summary>
-        /// Возвращает страниц редактирования данных пользователя
+        /// Возвращает страницу редактирования данных пользователя
         /// </summary>
         /// <returns></returns>
         [Route("Edit")]

@@ -32,7 +32,7 @@ namespace MyBlog.Controllers
         }
 
         /// <summary>
-        /// Принимает данные из представления и обеспечивает вход в систему
+        /// Обеспечивает вход в систему
         /// </summary>    
         [HttpPost]
         [ValidateAntiForgeryToken]

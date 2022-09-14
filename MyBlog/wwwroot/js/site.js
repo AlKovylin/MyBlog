@@ -75,10 +75,11 @@ function SaveArticle() {
         type: "POST",
         data: formData,
         success: function (response) {
-            alert("Успешно");
+            alert(response);
         },
         error: function (request, status, error) {
-            alert(request.responseText);
+            //alert(request.responseText);
+            alert("Что-то пошло не так. Возможно отсутствует интернет соединение.");
         }
     });
 }

@@ -154,7 +154,7 @@ namespace MyBlog.Controllers
         }
 
         /// <summary>
-        /// Сохранение отредактированной статьи
+        /// Сохранение отредактированной или новой статьи
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -206,8 +206,8 @@ namespace MyBlog.Controllers
 
                 _articleRepository.Create(newArticle);
             }
-            //return RedirectToAction("MyPage", "User");
-            return Json("successfully");
+
+            return Json("Сохранение статьи прошло успешно!");
         }
 
 
@@ -230,31 +230,7 @@ namespace MyBlog.Controllers
             return View("Editor", article);
         }
 
-        [HttpPost]
-        [Authorize(Roles = "User")]
-        public IActionResult Create(ArticleCreateViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var newArticle = _mapper.Map<Article>(model);
 
-                foreach (var tag in model.Tags)
-                {
-                    newArticle.Tags.Add(_tagRepository.Get(tag.Id));
-                }
-
-                newArticle.User = _userRepository.GetAll().Where(u => u.Email == User.Identity.Name) as User;
-
-                _articleRepository.Create(newArticle);
-
-                return RedirectToAction("MyPage", "User");
-            }
-            else
-            {
-                ModelState.AddModelError("", "Некорректные данные");
-                return View("Create", model);
-            }
-        }
 
         [HttpPost]
         [Authorize(Roles = "User")]

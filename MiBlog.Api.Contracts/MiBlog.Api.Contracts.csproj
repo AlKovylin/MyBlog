@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Comments\" />
+    <Folder Include="Models\Tags\" />
+    <Folder Include="Models\Role\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyBlog.Domain.Interfaces\MyBlog.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\MyBlog.Infrastructure.Business\MyBlog.Infrastructure.Business.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32602.291
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog", "MyBlog\MyBlog.csproj", "{72918A0E-D360-42A4-A77C-C917CBCC3399}"
 EndProject
@@ -16,6 +16,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.Infrastructure.Data", "MyBlog.Infrastructure.Data\MyBlog.Infrastructure.Data.csproj", "{91326F21-008A-4B16-B6E0-FB4DB44BCD8F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.Infrastructure.Business", "MyBlog.Infrastructure.Business\MyBlog.Infrastructure.Business.csproj", "{8AEADADA-9E30-4D7F-9FBE-91607C065143}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{760D9817-CBC5-4B21-9AC1-009521B85510}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.Api", "MyBlog.Api\MyBlog.Api.csproj", "{9AA738BA-8815-469A-A9CE-8A12158F959C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiBlog.Api.Contracts", "MiBlog.Api.Contracts\MiBlog.Api.Contracts.csproj", "{7490ACAD-FCCE-48D3-9161-2B4597429FA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +49,14 @@ Global
 		{8AEADADA-9E30-4D7F-9FBE-91607C065143}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AEADADA-9E30-4D7F-9FBE-91607C065143}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AEADADA-9E30-4D7F-9FBE-91607C065143}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AA738BA-8815-469A-A9CE-8A12158F959C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA738BA-8815-469A-A9CE-8A12158F959C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AA738BA-8815-469A-A9CE-8A12158F959C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AA738BA-8815-469A-A9CE-8A12158F959C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7490ACAD-FCCE-48D3-9161-2B4597429FA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7490ACAD-FCCE-48D3-9161-2B4597429FA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7490ACAD-FCCE-48D3-9161-2B4597429FA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7490ACAD-FCCE-48D3-9161-2B4597429FA8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +66,8 @@ Global
 		{5C3AB7C1-73FE-47D2-B10A-76220B64C813} = {D236CA35-8F4C-4818-8911-75C84F65C8CC}
 		{91326F21-008A-4B16-B6E0-FB4DB44BCD8F} = {DE68D1DA-AC39-4A53-B573-355D33E72258}
 		{8AEADADA-9E30-4D7F-9FBE-91607C065143} = {DE68D1DA-AC39-4A53-B573-355D33E72258}
+		{9AA738BA-8815-469A-A9CE-8A12158F959C} = {760D9817-CBC5-4B21-9AC1-009521B85510}
+		{7490ACAD-FCCE-48D3-9161-2B4597429FA8} = {760D9817-CBC5-4B21-9AC1-009521B85510}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11C888C3-F66C-4757-BB85-9518115800AB}

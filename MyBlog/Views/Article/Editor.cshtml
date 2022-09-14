@@ -7,11 +7,8 @@
 <div class="text-center">
     <h3 class="display-4 fst-italic py-3">Редактирование статьи</h3>
 </div>
-<div class="row">
-    <script src="~/js/ckeditor4/ckeditor.js"></script>
-
-    <!--<form asp-controller="Article" asp-action="Save" method="post">-->
-    <form id="editArticleForm">
+<div class="row">    
+    <form class="mb-4" id="editArticleForm">
         <div class="row">
             @foreach (var tag in Model.TagsAll)
             {
@@ -47,13 +44,13 @@
                 <textarea asp-for="Article.Content" id="content"></textarea>
             </div>
             <br />
-            <div>
-                <!--<input class="btn btn-sm btn-outline-primary" type="submit" value="Сохранить" onclick="updateTags" />-->
+            <div class="mb-4">
                 <button type="button" onclick="SaveArticle()" class="btn btn-sm btn-outline-primary">Сохранить</button>
             </div>
+            <hr class="my-2">
         </div>
-    </form>
-    @if (User.IsInRole("Moderator"))
+    </form>    
+    @if (User.IsInRole("Moderator") && @Model.Comments.Count > 0)
     {
         <div class="row">
             <div class="col-5">
@@ -83,10 +80,4 @@
         </div>
     }
 </div>
-
-@section Scripts{
-    <script>
-        
-    </script>
-}
 

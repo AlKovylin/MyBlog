@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Business.Models;
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyBlog.Api.Controllers
 {
@@ -18,17 +17,19 @@ namespace MyBlog.Api.Controllers
         private readonly IArticleRepository _articleRepository;
         private readonly IUserRepository _userRepository;//не используется в коде, но добавляет автора статьи 
         private readonly IRepository<Comment> _commentRepository;//не используется в коде, но добавляет комментарии к статье
-        //с IRepository<Tag> это не работает, видимо это связано со связью многие ко многим
+        private readonly IRepository<Tag> _tagRepository;//с IRepository<Tag> это не работает, видимо это связано со связью многие ко многим
         private readonly IMapper _mapper;
 
         public ArticleController(IArticleRepository articleRepository,
                                  IUserRepository userRepository,
                                  IRepository<Comment> commentRepository,
+                                 IRepository<Tag> tagRepository,
                                  IMapper mapper)
         {
             _articleRepository = articleRepository;
             _userRepository = userRepository;
             _commentRepository = commentRepository;
+            _tagRepository = tagRepository;
             _mapper = mapper;
         }
 
@@ -55,8 +56,8 @@ namespace MyBlog.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Route("Get")]
-        [HttpGet]
+        //[Route("Get")]
+        [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var article = _articleRepository.Get(id);
@@ -82,8 +83,43 @@ namespace MyBlog.Api.Controllers
             };
         }
 
+        [Route("Create")]
+        [HttpPost]
+        [Authorize(Roles = "User")]
+        public IActionResult Create(ArticleRequest request)
+        {
+            try
+            {
+                var article = new Article();
+
+                article.Title = request.Article.Title;
+
+                article.Content = request.Article.Content;
+
+                foreach (var tag in request.TagsArticle)
+                {
+                    var _tag = _tagRepository.Get(tag.Id);
+                    article.Tags.Add(_tag);
+                }
+
+                article.User = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
+
+                article.Published = DateTime.Now;
+
+                _articleRepository.Create(article);
+
+                return StatusCode(200, "Создание статьи прошло успешно.");
+            }
+            catch
+            {
+                return StatusCode(500, "Что-то пошло не так.");
+            }
+        }
+
+
         [Route("Update")]
         [HttpPut]
+        [Authorize(Roles = "User")]
         public IActionResult Update(ArticleRequest request)
         {
             try
@@ -91,10 +127,20 @@ namespace MyBlog.Api.Controllers
                 var article = _articleRepository.Get(request.Article.Id);
 
                 article.Title = request.Article.Title;
+
                 article.Content = request.Article.Content;
 
+                article.Modified = DateTime.Now;
+
+                article.Tags = _articleRepository.GetArticleTags(article);
+
                 article.Tags.Clear();
-                article.Tags = _mapper.Map<List<Tag>>(request.TagsArticle);
+
+                foreach (var tag in request.TagsArticle)
+                {
+                    var _tag = _tagRepository.Get(tag.Id);
+                    article.Tags.Add(_tag);
+                }
 
                 _articleRepository.Update(article);
 
@@ -106,8 +152,9 @@ namespace MyBlog.Api.Controllers
             }
         }
 
-        [Route("Delete")]
-        [HttpDelete]
+        //[Route("Delete")]
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "User")]
         public IActionResult Delete(int id)
         {
             try

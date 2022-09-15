@@ -33,6 +33,10 @@ namespace MyBlog.Api.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получение всех статей.
+        /// </summary>
+        /// <returns>Статьи, комментарии к ним и теги, сведения об авторе.</returns>
         [Route("GetAll")]
         [HttpGet]
         public IActionResult GetAll()
@@ -52,10 +56,10 @@ namespace MyBlog.Api.Controllers
         }
 
         /// <summary>
-        /// Чтение конкретной статьи
+        /// Получение конкретной статьи по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>Статья, комментарии к ней и теги, сведения об авторе.</returns>
         //[Route("Get")]
         [HttpGet("{id}")]
         public IActionResult Get(int id)
@@ -72,6 +76,11 @@ namespace MyBlog.Api.Controllers
             return StatusCode(200, response);
         }
 
+        /// <summary>
+        /// Маппинг ArticleResponse.
+        /// </summary>
+        /// <param name="article"></param>
+        /// <returns>new ArticleResponse.</returns>
         private ArticleResponse CreateModel(Article article)
         {
             return new ArticleResponse()
@@ -83,6 +92,11 @@ namespace MyBlog.Api.Controllers
             };
         }
 
+        /// <summary>
+        /// Создание новой статьи.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Сообщение о результате выполнения функции.</returns>
         [Route("Create")]
         [HttpPost]
         [Authorize(Roles = "User")]
@@ -116,7 +130,11 @@ namespace MyBlog.Api.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Обновление существующей статьи.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Сообщение о результате выполнения функции.</returns>
         [Route("Update")]
         [HttpPut]
         [Authorize(Roles = "User")]
@@ -152,7 +170,11 @@ namespace MyBlog.Api.Controllers
             }
         }
 
-        //[Route("Delete")]
+        /// <summary>
+        /// Удаление статьи.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Сообщение о результате выполнения функции.</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "User")]
         public IActionResult Delete(int id)

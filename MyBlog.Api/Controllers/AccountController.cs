@@ -39,7 +39,7 @@ namespace MyBlog.Api.Controllers
         }
 
         /// <summary>
-        /// Обеспечивает вход в систему
+        /// Обеспечивает вход в систему.
         /// </summary>  
         [HttpPost]
         [Route("Login")]
@@ -60,10 +60,10 @@ namespace MyBlog.Api.Controllers
         }
 
         /// <summary>
-        /// Регистрация пользователя
+        /// Регистрация пользователя.
         /// </summary>
         /// <param name="model"></param>
-        /// <returns></returns>
+        /// <returns>Регистарционные данные.</returns>
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register(UserRegisterRequest request)
@@ -87,7 +87,7 @@ namespace MyBlog.Api.Controllers
         }
 
         /// <summary>
-        /// Регистрирует пользователя в системе
+        /// Регистрирует пользователя в системе.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -115,9 +115,9 @@ namespace MyBlog.Api.Controllers
         }
 
         /// <summary>
-        /// Выход из системы
+        /// Выход из системы.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Сообщение о результате выполнения операции.</returns>
         [HttpPost]
         [Route("Logout")]
         public async Task<IActionResult> Logout()

@@ -49,6 +49,7 @@ namespace MyBlog.Api
 
             services.AddScoped<IValidator<UserRegisterRequest>, UserRegisterRequestValidator>();
             services.AddScoped<IValidator<UserLoginRequest>, UserLoginRequestValidator>();
+            services.AddScoped<IValidator<UserUpdateRequest>, UserRequestValidator>();
 
             var mapperConfig = new MapperConfiguration((v) =>
                 {

@@ -26,6 +26,8 @@ namespace MyBlog.Api
             CreateMap<Tag, TagResponse>();
 
             CreateMap<Role, RoleResponse>();
+
+            CreateMap<User, UserResponse>();
         }
     }
 }

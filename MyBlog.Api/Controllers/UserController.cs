@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using MiBlog.Api.Contracts.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
+using System.Linq;
 
 namespace MyBlog.Api.Controllers
 {
@@ -15,18 +18,21 @@ namespace MyBlog.Api.Controllers
         private readonly IRepository<Comment> _commentRepository;
         private readonly IRepository<Tag> _tagRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<UserUpdateRequest> _validatorUser;
 
         public UserController(IArticleRepository articleRepository,
                                  IUserRepository userRepository,
                                  IRepository<Comment> commentRepository,
                                  IRepository<Tag> tagRepository,
-                                 IMapper mapper)
+                                 IMapper mapper,
+                                 IValidator<UserUpdateRequest> validatorUser)
         {
             _articleRepository = articleRepository;
             _userRepository = userRepository;
             _commentRepository = commentRepository;
             _tagRepository = tagRepository;
             _mapper = mapper;
+            _validatorUser = validatorUser;
         }
 
         /// <summary>
@@ -35,9 +41,17 @@ namespace MyBlog.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(Roles = "User")]
         public ActionResult Get(int id)
         {
-            return null;
+            var user = _userRepository.Get(id);
+
+            if (user == null)
+                return StatusCode(400, new { message = $"Пользователь с ID: {id} не найден." });
+
+            var response = _mapper.Map<UserResponse>(user);
+
+            return StatusCode(200, response);
         }
 
         /// <summary>
@@ -45,30 +59,60 @@ namespace MyBlog.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{idArticle}")]
-        public ActionResult GetAll(int id)
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public ActionResult GetAll()
         {
-            return null;
+            var users = _userRepository.GetAll();
+
+            if (users.Count() == 0)
+                return StatusCode(400, new { message = "Нет ни одного зарегистрированного пользователя." });
+
+            var response = _mapper.Map<User[], UserResponse[]>(users.ToArray());
+
+            return StatusCode(200, response);
         }        
 
         /// <summary>
         /// Обновление данных существующего пользователя.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns></returns>
+        /// <returns>Обновлённые данные.</returns>
         [Route("Update")]
-        [Authorize(Roles = "Moderator")]
         [HttpPost]
+        [Authorize(Roles = "User")]
         //[ValidateAntiForgeryToken]
-        public ActionResult Update()//CommentUpdateRequest request)
+        public ActionResult Update(UserUpdateRequest request)
         {
             try
             {
-                return null;
+                var user = _userRepository.Get(request.id);
+
+                if(user == null)
+                    return StatusCode(400, new { message = $"Пользователь с ID: {request.id} не найден." });
+
+                var validationResult = _validatorUser.Validate(request);
+
+                if (!validationResult.IsValid)
+                    return StatusCode(400, validationResult.Errors);
+
+                user.Email = request.Email;
+
+                user.Name = request.Name;
+
+                user.DisplayName = request.DisplayName;
+
+                user.AboutMy = request.AboutMy;
+
+                _userRepository.Update(user);
+
+                var response = _mapper.Map<UserResponse>(user);
+
+                return StatusCode(200, response);
             }
             catch
             {
-                return null;
+                return StatusCode(500, "Что-то пошло не так.");
             }
         }
 
@@ -76,19 +120,26 @@ namespace MyBlog.Api.Controllers
         /// Удаление пользователя по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
-        [Authorize(Roles = "Moderator")]
+        /// <returns>Сообщение о результате выполнения операции.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("id")]
         //[ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
             try
             {
-                return null;
+                var user = _userRepository.Get(id);
+
+                if (user == null)
+                    return StatusCode(400, new { message = $"Пользователь с ID: {id} не найден." });
+
+                _userRepository.Delete(user);
+
+                return StatusCode(200, "Пользователь удалён.");
             }
             catch
             {
-                return null;
+                return StatusCode(500, "Что-то пошло не так.");
             }
         }
     }

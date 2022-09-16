@@ -9,8 +9,7 @@ using System.Linq;
 namespace MyBlog.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    [Authorize(Roles = "Moderator")]
+    [Route("[controller]")]    
     public class TagController : ControllerBase
     {
         private readonly IRepository<Tag> _tagRepository;
@@ -29,6 +28,7 @@ namespace MyBlog.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [Authorize(Roles = "User")]
         public ActionResult Get(int id)
         {
             var tag = _tagRepository.Get(id);
@@ -47,6 +47,7 @@ namespace MyBlog.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
+        [Authorize(Roles = "User")]
         public ActionResult GetAll()
         {
             var tags = _tagRepository.GetAll().OrderBy(t => t.Name);
@@ -66,7 +67,7 @@ namespace MyBlog.Api.Controllers
         /// <returns>Созданный тег.</returns>
         [Route("Create")]
         [HttpPost]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Moderator")]
         //[ValidateAntiForgeryToken]
         public ActionResult Create(string name)
         {
@@ -104,9 +105,9 @@ namespace MyBlog.Api.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns>Обновлённый тег.</returns>
-        [Route("Update")]
-        [Authorize(Roles = "Moderator")]
+        [Route("Update")]        
         [HttpPost]
+        [Authorize(Roles = "Moderator")]
         //[ValidateAntiForgeryToken]
         public ActionResult Update(TagUpdateRequest request)
         {
@@ -146,9 +147,9 @@ namespace MyBlog.Api.Controllers
         /// Удаление тега по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Сообщение о результате выполнения операции.</returns>
-        [Authorize(Roles = "Moderator")]
+        /// <returns>Сообщение о результате выполнения операции.</returns>        
         [HttpDelete("id")]
+        [Authorize(Roles = "Moderator")]
         //[ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {

@@ -116,9 +116,9 @@ namespace MyBlog.Api.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns>Сообщение о результате выполнения операции.</returns>
-        [Route("Update")]
-        [Authorize(Roles = "Moderator")]
+        [Route("Update")]        
         [HttpPost]
+        [Authorize(Roles = "Moderator")]
         //[ValidateAntiForgeryToken]
         public ActionResult Update(CommentUpdateRequest request)
         {
@@ -145,9 +145,9 @@ namespace MyBlog.Api.Controllers
         /// Удаление комментария по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Сообщение о результате выполнения операции.</returns>
-        [Authorize(Roles = "Moderator")]
+        /// <returns>Сообщение о результате выполнения операции.</returns>        
         [HttpDelete("id")]
+        [Authorize(Roles = "Moderator")]
         //[ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {

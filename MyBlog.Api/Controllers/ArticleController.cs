@@ -96,7 +96,7 @@ namespace MyBlog.Api.Controllers
         /// Создание новой статьи.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns>Сообщение о результате выполнения функции.</returns>
+        /// <returns>Сообщение о результате выполнения операции.</returns>
         [Route("Create")]
         [HttpPost]
         [Authorize(Roles = "User")]
@@ -134,7 +134,7 @@ namespace MyBlog.Api.Controllers
         /// Обновление существующей статьи.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns>Сообщение о результате выполнения функции.</returns>
+        /// <returns>Сообщение о результате выполнения операции.</returns>
         [Route("Update")]
         [HttpPut]
         [Authorize(Roles = "User")]
@@ -174,7 +174,7 @@ namespace MyBlog.Api.Controllers
         /// Удаление статьи.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Сообщение о результате выполнения функции.</returns>
+        /// <returns>Сообщение о результате выполнения операции.</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "User")]
         public IActionResult Delete(int id)

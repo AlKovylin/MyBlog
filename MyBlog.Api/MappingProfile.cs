@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MiBlog.Api.Contracts.Models.Articles;
+using MiBlog.Api.Contracts.Models.Comments;
+using MiBlog.Api.Contracts.Models.Tags;
 using MiBlog.Api.Contracts.Models.Users;
 using MyBlog.Domain.Core;
 using MyBlog.Infrastructure.Business.Models;
@@ -19,7 +21,10 @@ namespace MyBlog.Api
             CreateMap<Tag, TagModel>();
             CreateMap<TagModel, Tag>();
 
-            //CreateMap<Article, ArticleResponse>();
+            CreateMap<Comment, CommentResponse>();
+
+            CreateMap<Tag, TagResponse>();
+
         }
     }
 }

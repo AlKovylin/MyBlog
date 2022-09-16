@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Tags\" />
     <Folder Include="Models\Role\" />
   </ItemGroup>
 

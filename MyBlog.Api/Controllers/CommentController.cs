@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
+using System;
+using System.Linq;
 
 namespace MyBlog.Api.Controllers
 {
@@ -15,19 +17,16 @@ namespace MyBlog.Api.Controllers
         private readonly IArticleRepository _articleRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRepository<Comment> _commentRepository;
-        private readonly IRepository<Tag> _tagRepository;
         private readonly IMapper _mapper;
 
         public CommentController(IArticleRepository articleRepository,
                                  IUserRepository userRepository,
                                  IRepository<Comment> commentRepository,
-                                 IRepository<Tag> tagRepository,
                                  IMapper mapper)
         {
             _articleRepository = articleRepository;
             _userRepository = userRepository;
             _commentRepository = commentRepository;
-            _tagRepository = tagRepository;
             _mapper = mapper;
         }
 
@@ -36,10 +35,19 @@ namespace MyBlog.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}")]
+        //[HttpGet("{id}")]
+        [Route("Get")]
+        [HttpGet]
         public ActionResult Get(int id)
         {
-            return null;
+            var comment = _commentRepository.Get(id);
+
+            if(comment == null)
+                return StatusCode(400, new { message = $"Комментарий с ID: {id} не найден." });
+
+            var response = _mapper.Map<CommentResponse>(comment);
+
+            return StatusCode(200, response);
         }
 
         /// <summary>
@@ -48,16 +56,23 @@ namespace MyBlog.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{idArticle}")]
-        public ActionResult GetAll(int id)
+        public ActionResult GetAll(int idArticle)
         {
-            return null;
+            var comments = _commentRepository.GetAll().Where(c => c.ArticleId == idArticle).OrderByDescending(c => c.Created);
+
+            if (comments.Count() == 0)
+                return StatusCode(400, new { message = $"К статье с ID: {idArticle} комментарии не найдены." });
+
+            var response = _mapper.Map< Comment[], CommentResponse[]>(comments.ToArray());
+
+            return StatusCode(200, response);
         }
 
         /// <summary>
         /// Создание нового комментария.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns></returns>
+        /// <returns>Созданные комментарий.</returns>
         [Route("Create")]
         [HttpPost]
         [Authorize(Roles = "User")]
@@ -66,11 +81,33 @@ namespace MyBlog.Api.Controllers
         {
             try
             {
-                return null;
+                if (string.IsNullOrEmpty(request.Content))
+                    return StatusCode(400, new { message = "Текст комментария не может быть пустым." });
+
+                var article = _articleRepository.Get(request.IdArticle);
+
+                if(article == null)
+                    return StatusCode(400, new { message = $"Статья с ID: {request.IdArticle} не найдена." });
+
+                var comment = new Comment();
+
+                comment.Article = article;
+
+                comment.User = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
+
+                comment.Content = request.Content;
+
+                comment.Created = DateTime.Now;
+
+                _commentRepository.Create(comment);
+
+                var response = _mapper.Map<CommentResponse>(comment);
+
+                return StatusCode(200, response);
             }
             catch
             {
-                return null;
+                return StatusCode(500, "Что-то пошло не так.");
             }
         }
 
@@ -78,7 +115,7 @@ namespace MyBlog.Api.Controllers
         /// Обновление существующего комментария.
         /// </summary>
         /// <param name="request"></param>
-        /// <returns></returns>
+        /// <returns>Сообщение о результате выполнения операции.</returns>
         [Route("Update")]
         [Authorize(Roles = "Moderator")]
         [HttpPost]
@@ -87,11 +124,20 @@ namespace MyBlog.Api.Controllers
         {
             try
             {
-                return null;
+                var comment = _commentRepository.Get(request.Id);
+
+                if (comment == null)
+                    return StatusCode(400, new { message = $"Комментарий с ID: {request.Id} не найден." });
+
+                comment.Content = request.Content;
+
+                _commentRepository.Update(comment);
+
+                return StatusCode(200, "Комментарий обновлен.");
             }
             catch
             {
-                return null;
+                return StatusCode(500, "Что-то пошло не так.");
             }
         }
 
@@ -99,7 +145,7 @@ namespace MyBlog.Api.Controllers
         /// Удаление комментария по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>Сообщение о результате выполнения операции.</returns>
         [Authorize(Roles = "Moderator")]
         [HttpDelete("id")]
         //[ValidateAntiForgeryToken]
@@ -107,11 +153,18 @@ namespace MyBlog.Api.Controllers
         {
             try
             {
-                return null;
+                var comment = _commentRepository.Get(id);
+
+                if (comment == null)
+                    return StatusCode(400, new { message = $"Комментарий с ID: {id} не найден." });
+
+                _commentRepository.Delete(comment);
+
+                return StatusCode(200, "Комментарий удалён.");
             }
             catch
             {
-                return null;
+                return StatusCode(500, "Что-то пошло не так.");
             }
         }
     }

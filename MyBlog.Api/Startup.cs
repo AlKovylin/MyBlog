@@ -1,25 +1,22 @@
 using AutoMapper;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using MiBlog.Api.Contracts.Models.Users;
 using MiBlog.Api.Contracts.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Data;
 using MyBlog.Infrastructure.Data.Repository;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MyBlog.Api
@@ -49,7 +46,7 @@ namespace MyBlog.Api
 
             services.AddScoped<IValidator<UserRegisterRequest>, UserRegisterRequestValidator>();
             services.AddScoped<IValidator<UserLoginRequest>, UserLoginRequestValidator>();
-            services.AddScoped<IValidator<UserUpdateRequest>, UserRequestValidator>();
+            services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateRequestValidator>();
 
             var mapperConfig = new MapperConfiguration((v) =>
                 {
@@ -64,7 +61,16 @@ namespace MyBlog.Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyBlog.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "MyBlog.Api",
+                    Version = "v1",
+                    Description = "Финальный проект ASP.NET Core Web API",
+                    Contact = new OpenApiContact { Name = "Ковылин Алексей", Email = "alkovylin@ya.ru" },
+                    License = new OpenApiLicense { Name = "Open Source" }
+                });
+
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
             });
 
             services.AddAuthentication(options => options.DefaultScheme = "Cookies")

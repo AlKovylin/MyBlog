@@ -60,7 +60,7 @@ namespace MyBlog.Controllers
             {
                 var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
 
-                var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).ToList();
+                var comments = _commentRepository.GetAll().Where(c => c.ArticleId == article.Id).ToList();
 
                 var commentsModelList = new List<CommentModel>();
 
@@ -102,7 +102,7 @@ namespace MyBlog.Controllers
 
             var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
 
-            var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
+            var comments = _commentRepository.GetAll().Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
 
             var tags = _articleRepository.GetArticleTags(article);
 
@@ -143,7 +143,7 @@ namespace MyBlog.Controllers
 
             if (User.IsInRole("Moderator"))
             {
-                var comments = _commentRepository.GetAll().Select(c => c).Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
+                var comments = _commentRepository.GetAll().Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
 
                 editArticle.Comments = _mapper.Map<List<CommentModel>>(comments);
             }
@@ -194,7 +194,7 @@ namespace MyBlog.Controllers
 
                 newArticle.Content = model.Article.Content;
 
-                newArticle.User = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Email == User.Identity.Name);
+                newArticle.User = _userRepository.GetAll().FirstOrDefault(u => u.Email == User.Identity.Name);
 
                 foreach (var tag in TagsList)
                 {

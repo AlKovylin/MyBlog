@@ -1,15 +1,19 @@
 ﻿using AutoMapper;
+using MiBlog.Api.Contracts.Models.Info;
 using MiBlog.Api.Contracts.Models.Tags;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Linq;
 
 namespace MyBlog.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]    
+    [Produces("application/json")]
+    [Route("api/[controller]")]
     public class TagController : ControllerBase
     {
         private readonly IRepository<Tag> _tagRepository;
@@ -26,15 +30,20 @@ namespace MyBlog.Api.Controllers
         /// Получить тег по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <response code="200">Id и имя тега. Модель <a href='#model-TagResponse'>TagResponse</a></response>
+        /// <response code="204">Тег с указанным ID не найден.</response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="User".</response>
         [HttpGet("{id}")]
         [Authorize(Roles = "User")]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(TagResponse))]
+        [SwaggerResponse(StatusCodes.Status204NoContent, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public ActionResult Get(int id)
         {
             var tag = _tagRepository.Get(id);
 
             if (tag == null)
-                return StatusCode(400, new { message = $"Тег с ID: {id} не найден." });
+                return StatusCode(204, new { message = $"Тег с ID: {id} не найден." });
 
             var response = _mapper.Map<TagResponse>(tag);
 
@@ -44,16 +53,20 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Получить все теги.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <response code="200">Теги. Модель <a href='#model-TagResponse'>TagResponse</a></response>
+        /// <response code="204">Нет ни одного тега.</response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="User".</response>
         [HttpGet]
         [Authorize(Roles = "User")]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(TagResponse[]))]
+        [SwaggerResponse(StatusCodes.Status204NoContent, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public ActionResult GetAll()
         {
             var tags = _tagRepository.GetAll().OrderBy(t => t.Name);
 
             if (!tags.Any())
-                return StatusCode(400, new { message = "Теги не созданы." });
+                return StatusCode(204, new { message = "Нет ни одного тега." });
 
             var response = _mapper.Map<Tag[], TagResponse[]>(tags.ToArray());
 
@@ -63,12 +76,30 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Создание нового тега.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns>Созданный тег.</returns>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     POST
+        ///     {
+        ///        "name": "#ASP.Net"
+        ///     }
+        /// </remarks>
+        /// <param name="name">Имя тега должно начинаться с символа '#'</param>
+        /// <response code="201">Создание тега прошло успешно. Модель <a href='#model-TagResponse'>TagResponse</a></response>
+        /// <response code="400">Сообщение об ошибке валидации:
+        /// <ul>
+        ///     <li>"Имя тега не может быть пустым."</li>
+        ///     <li>"Имя тега должно начинаться с символа '#'."</li>
+        ///     <li>"Тег с именем: {Name} уже существует."</li>
+        /// </ul>
+        /// </response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="Moderator".</response>
         [Route("Create")]
         [HttpPost]
         [Authorize(Roles = "Moderator")]
-        //[ValidateAntiForgeryToken]
+        [SwaggerResponse(StatusCodes.Status201Created, null, typeof(TagResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public ActionResult Create(string name)
         {
             try
@@ -92,7 +123,7 @@ namespace MyBlog.Api.Controllers
 
                 var response = _mapper.Map<TagResponse>(tag);
 
-                return StatusCode(200, response);
+                return StatusCode(201, response);
             }
             catch
             {
@@ -103,12 +134,33 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Обновление существующего тега.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns>Обновлённый тег.</returns>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     POST
+        ///     {
+        ///        "name": "#ASP.Net"
+        ///     }
+        /// </remarks>
+        /// <param name="request">Модель <a href='#model-TagUpdateRequest'>TagUpdateRequest</a></param>
+        /// <response code="200">Обновление тега прошло успешно. Модель <a href='#model-TagResponse'>TagResponse</a></response>
+        /// <response code="204">Роль с указанным ID не найдена.</response>
+        /// <response code="400">Сообщение об ошибке валидации:
+        /// <ul>
+        ///     <li>"Имя тега не может быть пустым."</li>
+        ///     <li>"Имя тега должно начинаться с символа '#'."</li>
+        ///     <li>"Тег с ID: {Id} не найден."</li>
+        ///     <li>"Тег с именем: {Name} уже существует."</li>
+        /// </ul>
+        /// </response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="Moderator".</response>
         [Route("Update")]        
-        [HttpPost]
+        [HttpPut]
         [Authorize(Roles = "Moderator")]
-        //[ValidateAntiForgeryToken]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(TagResponse))]
+        [SwaggerResponse(StatusCodes.Status204NoContent, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public ActionResult Update(TagUpdateRequest request)
         {
             try
@@ -122,7 +174,7 @@ namespace MyBlog.Api.Controllers
                 var tag = _tagRepository.Get(request.Id);
 
                 if (tag == null)
-                    return StatusCode(400, new { message = $"Тег с ID: {request.Id} не найден." });
+                    return StatusCode(204, new { message = $"Тег с ID: {request.Id} не найден." });
 
                 var checkName = _tagRepository.GetAll().Any(t => t.Name == request.Name);
 
@@ -147,10 +199,14 @@ namespace MyBlog.Api.Controllers
         /// Удаление тега по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Сообщение о результате выполнения операции.</returns>        
-        [HttpDelete("id")]
+        /// <response code="200">Тег удалён.</response>
+        /// <response code="400">Тег с ID: {id} не найден.</response>    
+        /// <response code="401">Unauthorized: доступно пользователям Roles="Moderator".</response>
+        [HttpDelete("{id}")]
         [Authorize(Roles = "Moderator")]
-        //[ValidateAntiForgeryToken]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]        
         public ActionResult Delete(int id)
         {
             try

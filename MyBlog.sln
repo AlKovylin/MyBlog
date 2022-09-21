@@ -19,9 +19,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.Infrastructure.Busin
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{760D9817-CBC5-4B21-9AC1-009521B85510}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlog.Api", "MyBlog.Api\MyBlog.Api.csproj", "{9AA738BA-8815-469A-A9CE-8A12158F959C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.Api", "MyBlog.Api\MyBlog.Api.csproj", "{9AA738BA-8815-469A-A9CE-8A12158F959C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiBlog.Api.Contracts", "MiBlog.Api.Contracts\MiBlog.Api.Contracts.csproj", "{7490ACAD-FCCE-48D3-9161-2B4597429FA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiBlog.Api.Contracts", "MiBlog.Api.Contracts\MiBlog.Api.Contracts.csproj", "{7490ACAD-FCCE-48D3-9161-2B4597429FA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3EE8A3AB-EDB0-4F5A-AA7B-CD37933D3E10}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,16 +1,20 @@
 ﻿using AutoMapper;
+using MiBlog.Api.Contracts.Models.Info;
 using MiBlog.Api.Contracts.Models.Role;
 using MiBlog.Api.Contracts.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Linq;
 
 namespace MyBlog.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Produces("application/json")]
+    [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
     public class RoleController : ControllerBase
     {
@@ -27,14 +31,17 @@ namespace MyBlog.Api.Controllers
         /// Получить роль по id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <response code="200">Id, имя и описание роли. Модель <a href='#model-RoleResponse'>RoleResponse</a></response>
+        /// <response code="204">Роль с указанным ID не найдена.</response>
         [HttpGet("{id}")]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(RoleResponse))]
+        [SwaggerResponse(StatusCodes.Status204NoContent, null, typeof(Message))]
         public ActionResult Get(int id)
         {
             var role = _roleRepository.Get(id);
 
             if (role == null)
-                return StatusCode(400, new { message = $"Роль с ID: {id} не найдена." });
+                return StatusCode(204, new { message = $"Роль с ID: {id} не найдена." });
 
             var response = _mapper.Map<RoleResponse>(role);
 
@@ -44,15 +51,13 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Получить все роли.
         /// </summary>
-        /// <param name="id"></param>
+        /// <response code="200">Роли пользователей. Модель <a href='#model-RoleResponse'>RoleResponse</a></response>
         /// <returns></returns>
         [HttpGet]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(RoleResponse[]))]
         public ActionResult GetAll()
         {
             var roles = _roleRepository.GetAll();
-
-            if (!roles.Any())
-                return StatusCode(400, new { message = "Теги не созданы." });
 
             var response = _mapper.Map<Role[], RoleResponse[]>(roles.ToArray());
 
@@ -62,11 +67,30 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Создание новой роли.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns>Созданная роль.</returns>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     POST
+        ///     {
+        ///        "name": "User",
+        ///        "description": "Базовая роль с минимальными правами."
+        ///     }
+        /// </remarks>
+        /// <param name="request">Модель <a href='#model-RoleCreateRequest'>RoleCreateRequest</a></param>
+        /// <response code="201">Создание роли прошло успешно. Модель <a href='#model-RoleResponse'>RoleResponse</a></response>
+        /// <response code="400">Сообщение об ошибке валидации:
+        /// <ul>
+        ///     <li>"Имя роли не может быть пустым."</li>
+        ///     <li>"Роль с именем: {Name} уже существует."</li>
+        ///     <li>"Описание роли не может быть пустым."</li>
+        /// </ul>
+        /// </response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="Admin".</response>
         [Route("Create")]
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [SwaggerResponse(StatusCodes.Status201Created, null, typeof(RoleResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public ActionResult Create(RoleCreateRequest request)
         {
             try
@@ -92,7 +116,7 @@ namespace MyBlog.Api.Controllers
 
                 var response = _mapper.Map<RoleResponse>(role);
 
-                return StatusCode(200, response);
+                return StatusCode(201, response);
             }
             catch
             {
@@ -103,11 +127,26 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Обновление существующей роли.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns>Обновлённую роль.</returns>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     POST
+        ///     {
+        ///        "id": "1",
+        ///        "description": "Базовая роль с минимальными правами."
+        ///     }
+        /// </remarks>
+        /// <param name="request">Для редактирования доступно только описание роли. Модель <a href='#model-RoleUpdateRequest'>RoleUpdateRequest</a></param>
+        /// <response code="200">Обновление прошло успешно. Модель <a href='#model-RoleResponse'>RoleResponse</a></response>
+        /// <response code="204">Роль с указанным ID не найдена.</response>
+        /// <response code="400">Описание роли не может быть пустым.</response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="Admin".</response>
         [Route("Update")]
-        [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [HttpPut]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(RoleResponse))]
+        [SwaggerResponse(StatusCodes.Status204NoContent, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public ActionResult Update(RoleUpdateRequest request)
         {
             try
@@ -115,7 +154,7 @@ namespace MyBlog.Api.Controllers
                 var role = _roleRepository.Get(request.Id);
 
                 if (role == null)
-                    return StatusCode(400, new { message = $"Роль с ID: {request.Id} не найдена." });
+                    return StatusCode(204, new { message = $"Роль с ID: {request.Id} не найдена." });
 
                 if (string.IsNullOrEmpty(request.Description))
                     return StatusCode(400, new { message = "Описание роли не может быть пустым." });
@@ -137,10 +176,16 @@ namespace MyBlog.Api.Controllers
         /// <summary>
         /// Удаление роли по id.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Сообщение о результате выполнения операции.</returns>
-        [HttpDelete("id")]
-        //[ValidateAntiForgeryToken]
+        /// <param name="id">Попытка удаления ролей с id = 1||2||3 вызовет ошибку 403.</param>
+        /// <response code="200">Роль удалена.</response>
+        /// <response code="400">Роль с ID: {id} не найдена.</response>
+        /// <response code="401">Unauthorized: доступно пользователям Roles="Admin".</response>
+        /// <response code="403">Роль {Name} является базовой и не может быть удалена.</response>
+        [HttpDelete("{id}")]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized)]        
+        [SwaggerResponse(StatusCodes.Status403Forbidden, null, typeof(Message))]
         public ActionResult Delete(int id)
         {
             try

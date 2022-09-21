@@ -1,22 +1,24 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using MiBlog.Api.Contracts.Models.Info;
 using MiBlog.Api.Contracts.Models.Users;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyBlog.Domain.Core;
 using MyBlog.Domain.Interfaces;
 using MyBlog.Infrastructure.Data;
-using System;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Authentication;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyBlog.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Produces("application/json")]
+    [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -39,10 +41,34 @@ namespace MyBlog.Api.Controllers
         }
 
         /// <summary>
-        /// Обеспечивает вход в систему.
+        /// Вход в систему.
         /// </summary>  
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     POST
+        ///     {
+        ///        "email": example@mail.ru,
+        ///        "password": "*****"
+        ///     }
+        /// </remarks>
+        /// <param name="request">Модель <a href='#model-UserLoginRequest'>UserLoginRequest</a></param>
+        /// <returns></returns>
+        /// <response code="201">Возвращает данные авторизованного пользователя. Модель <a href='#model-UserLoginResponse'>UserLoginResponse</a></response>
+        /// <response code="400">Сообщение об ошибке валидации:
+        /// <ul>
+        ///     <li>"Поле не может быть пустым."</li>
+        ///     <li>"Пользователь с Email: {x.Email} не существует."</li>
+        ///     <li>"Требуется указать действительный адрес электронной почты."</li>
+        ///     <li>"Пароль не совпадает."</li>
+        ///     <li>"Пароль должен содержать не менее 5-ти символов."</li>
+        /// </ul>
+        /// </response>
+
         [HttpPost]
         [Route("Login")]
+        [SwaggerResponse(StatusCodes.Status201Created, null, typeof(UserLoginResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
         public async Task<IActionResult> Authenticate(UserLoginRequest request)
         {
             var validationResult = _validatorLogin.Validate(request);
@@ -56,16 +82,39 @@ namespace MyBlog.Api.Controllers
 
             var response = _mapper.Map<UserLoginResponse>(user);
 
-            return StatusCode(200, response);
+            return StatusCode(201, response);
         }
 
         /// <summary>
         /// Регистрация пользователя.
         /// </summary>
-        /// <param name="model"></param>
+        /// <remarks>
+        /// Образец запроса:
+        ///
+        ///     POST
+        ///     {
+        ///        "email": "example@mail.ru",
+        ///        "regPassword": "*****",
+        ///        "confirmPassword": "*****"
+        ///     }
+        /// </remarks>
+        /// <param name="request">Модель <a href='#model-UserRegisterRequest'>UserRegisterRequest</a></param>
         /// <returns>Регистарционные данные.</returns>
+        /// <returns></returns>
+        /// <response code="201">Возвращает данные авторизованного пользователя. Модель <a href='#model-UserLoginResponse'>UserLoginResponse</a></response>
+        /// <response code="400">Сообщение об ошибке валидации.       
+        /// <ul>
+        ///     <li>"Поле не может быть пустым."</li>
+        ///     <li>"Пользователь с Email: {x.Email} уже существует."</li>
+        ///     <li>"Требуется указать действительный адрес электронной почты."</li>
+        ///     <li>"Пароль должен содержать не менее 5-ти символов."</li>
+        ///     <li>"Пароли не совпадают."</li>
+        /// </ul>
+        /// </response>
         [HttpPost]
         [Route("Register")]
+        [SwaggerResponse(StatusCodes.Status201Created, null, typeof(UserLoginResponse))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, null, typeof(Message))]
         public async Task<IActionResult> Register(UserRegisterRequest request)
         {
             var validationResult = _validatorRegister.Validate(request);
@@ -118,8 +167,10 @@ namespace MyBlog.Api.Controllers
         /// Выход из системы.
         /// </summary>
         /// <returns>Сообщение о результате выполнения операции.</returns>
+        /// <response code="200">Выход из системы выполнен.</response>
         [HttpPost]
         [Route("Logout")]
+        [SwaggerResponse(StatusCodes.Status200OK, null, typeof(Message))]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();

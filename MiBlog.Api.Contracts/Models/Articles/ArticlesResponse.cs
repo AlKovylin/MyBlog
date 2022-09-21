@@ -4,6 +4,6 @@ namespace MiBlog.Api.Contracts.Models.Articles
 {
     public class ArticlesResponse
     {
-        public List<ArticleResponse> Articles = new();
+        public ArticleResponse[]? Articles { get; set; }
     }
 }

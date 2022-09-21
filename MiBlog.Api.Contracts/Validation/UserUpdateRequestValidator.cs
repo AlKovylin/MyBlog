@@ -4,10 +4,10 @@ using MyBlog.Domain.Interfaces;
 
 namespace MiBlog.Api.Contracts.Validation
 {
-    public class UserRequestValidator : AbstractValidator<UserUpdateRequest>
+    public class UserUpdateRequestValidator : AbstractValidator<UserUpdateRequest>
     {
         private readonly IUserRepository _userRepository;
-        public UserRequestValidator(IUserRepository userRepository)
+        public UserUpdateRequestValidator(IUserRepository userRepository)
         {
             _userRepository = userRepository;
 

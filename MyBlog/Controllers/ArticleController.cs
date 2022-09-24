@@ -100,7 +100,7 @@ namespace MyBlog.Controllers
         {
             var article = _articleRepository.GetAll().FirstOrDefault(a => a.Id == id);
 
-            var user = _userRepository.GetAll().FirstOrDefault(u => u.Id == article.UserId);
+            var user = _userRepository.GetAll().Select(u => u).FirstOrDefault(u => u.Id == article.UserId);
 
             var comments = _commentRepository.GetAll().Where(c => c.ArticleId == article.Id).OrderByDescending(c => c.Created).ToList();
 
